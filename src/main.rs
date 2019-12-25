@@ -10,11 +10,12 @@ use piston::input::{RenderEvent, PressEvent, UpdateEvent};
 use piston::window::WindowSettings;
 
 mod game;
+mod snake;
 
 fn main() {
     let opengl = OpenGL::V3_2;
 
-    let mut window: Window = WindowSettings::new("spinning-square", [800, 800])
+    let mut window: Window = WindowSettings::new("Rusty Snake", [800, 800])
         .graphics_api(opengl)
         .exit_on_esc(true)
         .build()
