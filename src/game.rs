@@ -50,7 +50,7 @@ impl Game{
 
             self.snake.update_position();
 
-            self.fill_empty_frame_time(&start);
+            self.fill_unused_frame_time(&start);
     }
 
     pub fn key_press(&mut self, args: &Button){
@@ -59,19 +59,19 @@ impl Game{
                 Keyboard(Key::S) => self.snake.go_down(),
                 Keyboard(Key::A) => self.snake.go_left(),
                 Keyboard(Key::D) => self.snake.go_right(),
-                _ => print!("Rest")
+                _ => {/* Do nothing */}
             }
     }
 
-    fn fill_empty_frame_time(&mut self, frame_start_time: &SystemTime){
+    fn fill_unused_frame_time(&mut self, frame_start_time: &SystemTime){
             let difference = frame_start_time.duration_since(*frame_start_time)
-            .expect("difference error");
+                                                .expect("Calculating remaining time failed");
         
             let sum_with_frameduration = difference.checked_add(Duration::from_millis(200));
 
             match sum_with_frameduration {
                 Some(n) => sleep(n),
-                None => print!("Error")
+                None => panic!("Not an option")
             }
     }
 }
