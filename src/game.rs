@@ -32,6 +32,7 @@ impl Game{
             let square = rectangle::square(0.0, 0.0, STEP);
             let position_x = self.snake.position_x;
             let position_y = self.snake.position_y;
+            let tail = &self.snake.tail;
 
             self.gl.draw(args.viewport(), |c, gl| {
                 clear(GRAY, gl);
@@ -41,7 +42,16 @@ impl Game{
                     .trans(position_x as f64 * STEP, position_y as f64 * STEP);
 
                 rectangle(RED, square, transform, gl);
+
+                for (x, y) in tail {
+                    let transform = c
+                    .transform
+                    .trans(*x as f64 * STEP, *y as f64 * STEP);
+
+                    rectangle(RED, square, transform, gl);
+                }
             });
+
             println!("render");
     }
 
@@ -59,6 +69,7 @@ impl Game{
                 Keyboard(Key::S) => self.snake.go_down(),
                 Keyboard(Key::A) => self.snake.go_left(),
                 Keyboard(Key::D) => self.snake.go_right(),
+                Keyboard(Key::T) => self.snake.add_tail_element(),
                 _ => {/* Do nothing */}
             }
     }
@@ -67,7 +78,7 @@ impl Game{
             let difference = frame_start_time.duration_since(*frame_start_time)
                                                 .expect("Calculating remaining time failed");
         
-            let sum_with_frameduration = difference.checked_add(Duration::from_millis(20));
+            let sum_with_frameduration = difference.checked_add(Duration::from_millis(200));
 
             match sum_with_frameduration {
                 Some(n) => sleep(n),
