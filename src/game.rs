@@ -6,18 +6,20 @@ use std::time::{Duration, SystemTime};
 use std::thread::sleep;
 use super::snake::Snake;
 
-const SEGMENT_SIZE: f64 = 50.0;
+const STEP: f64 = 25.0;
 
 pub struct Game {
     gl: GlGraphics,
-    snake: Snake
+    snake: Snake,
+    size: i8
 }
 
 impl Game{
-    pub fn new(opengl_version: OpenGL) -> Game {
+    pub fn new(opengl_version: OpenGL, board_size: i8) -> Game {
         Game {
             gl: GlGraphics::new(opengl_version),
-            snake: Snake::new()
+            snake: Snake::new(),
+            size: board_size
         }
     }
 
@@ -27,29 +29,27 @@ impl Game{
             const GRAY: [f32; 4] = [0.9, 0.9, 0.9, 1.0];
             const RED: [f32; 4] = [1.0, 0.0, 0.0, 1.0];
 
-            let square = rectangle::square(0.0, 0.0, SEGMENT_SIZE);
+            let square = rectangle::square(0.0, 0.0, STEP);
             let position_x = self.snake.position_x;
             let position_y = self.snake.position_y;
-
-            let(x, y) = (args.window_size[0] / 2.0, args.window_size[1] / 2.0);
 
             self.gl.draw(args.viewport(), |c, gl| {
                 clear(GRAY, gl);
 
                 let transform = c
                     .transform
-                    .trans(x + position_x, y + position_y)
-                    .trans(-25.0, -25.0);
+                    .trans(position_x as f64 * STEP, position_y as f64 * STEP);
 
                 rectangle(RED, square, transform, gl);
             });
+            println!("render");
     }
 
     pub fn update(&mut self, args: &UpdateArgs){
             let start = SystemTime::now();
-
-            self.snake.update_position();
-
+            let size = self.size;
+            self.snake.update_position(|x| { if x == -1 {size - 1} else{ x % size}});
+            println!("update");
             self.fill_unused_frame_time(&start);
     }
 
@@ -67,7 +67,7 @@ impl Game{
             let difference = frame_start_time.duration_since(*frame_start_time)
                                                 .expect("Calculating remaining time failed");
         
-            let sum_with_frameduration = difference.checked_add(Duration::from_millis(200));
+            let sum_with_frameduration = difference.checked_add(Duration::from_millis(20));
 
             match sum_with_frameduration {
                 Some(n) => sleep(n),

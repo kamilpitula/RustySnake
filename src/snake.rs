@@ -7,28 +7,28 @@ enum SnakeDirection {
 }
 
 pub struct Snake {
-    pub position_x: f64,
-    pub position_y: f64,
+    pub position_x: i8,
+    pub position_y: i8,
     direction: SnakeDirection
 }
 
 impl Snake{
     pub fn new() -> Snake {
         Snake {
-            position_x: 0.0,
-            position_y: 0.0,
-            direction: SnakeDirection::Left
+            position_x: 0,
+            position_y: 0,
+            direction: SnakeDirection::Right
         }
     }
 
-    pub fn update_position(&mut self) {
+    pub fn update_position<F>(&mut self, range_checker: F)
+        where F: Fn(i8) -> i8 {
         match self.direction {
-            SnakeDirection::Up => self.position_y -= 25.0,
-            SnakeDirection::Down => self.position_y += 25.0,
-            SnakeDirection::Left => self.position_x -= 25.0,
-            SnakeDirection::Right => self.position_x += 25.0
-        }
-
+            SnakeDirection::Up => self.position_y = range_checker(self.position_y - 1),
+            SnakeDirection::Down => self.position_y = range_checker(self.position_y + 1),
+            SnakeDirection::Left => self.position_x = range_checker(self.position_x - 1),
+            SnakeDirection::Right => self.position_x = range_checker(self.position_x + 1)
+        };
     }
 
     pub fn go_up(&mut self) {

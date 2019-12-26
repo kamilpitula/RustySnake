@@ -21,7 +21,7 @@ fn main() {
         .build()
         .unwrap();
 
-    let mut game = game::Game::new(opengl);
+    let mut game = game::Game::new(opengl, 32);
 
     let mut events = Events::new(EventSettings::new());
 
