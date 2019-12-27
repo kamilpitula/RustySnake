@@ -13,7 +13,9 @@ pub struct Game {
     gl: GlGraphics,
     snake: Snake,
     size: i8,
-    points: Points
+    points: Points,
+    score: i32,
+    level: f64
 }
 
 impl Game{
@@ -22,7 +24,9 @@ impl Game{
             gl: GlGraphics::new(opengl_version),
             snake: Snake::new(),
             size: board_size,
-            points: Points::new(board_size)
+            points: Points::new(board_size),
+            score: 0,
+            level: 200.0
         }
     }
 
@@ -55,8 +59,6 @@ impl Game{
                     rectangle(RED, square, transform, gl);
                 }
             });
-
-            println!("render");
     }
 
     pub fn update(&mut self, args: &UpdateArgs){
@@ -67,8 +69,11 @@ impl Game{
             if self.points.is_eaten(x, y){
                 self.points.next();
                 self.snake.add_tail_element();
+                self.score += 10;
+                self.level *= 0.95;
             }
-            println!("update");
+            println!("score: {}", self.score);
+
             self.fill_unused_frame_time(&start);
     }
 
@@ -85,8 +90,8 @@ impl Game{
     fn fill_unused_frame_time(&mut self, frame_start_time: &SystemTime){
             let difference = frame_start_time.duration_since(*frame_start_time)
                                                 .expect("Calculating remaining time failed");
-        
-            let sum_with_frameduration = difference.checked_add(Duration::from_millis(200));
+
+            let sum_with_frameduration = difference.checked_add(Duration::from_millis(self.level as u64));
 
             match sum_with_frameduration {
                 Some(n) => sleep(n),

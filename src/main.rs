@@ -25,7 +25,10 @@ fn main() {
 
     let mut game = game::Game::new(opengl, 32);
 
-    let mut events = Events::new(EventSettings::new());
+    let mut settings = EventSettings::new();
+    settings.ups = 60;
+    settings.max_fps = 60;
+    let mut events = Events::new(settings);
 
     while let Some(e) = events.next(&mut window){
         if let Some(args) = e.render_args(){
