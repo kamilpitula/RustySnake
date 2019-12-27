@@ -66,7 +66,7 @@ impl Game{
             let size = self.size;
             self.snake.update_position(|x| { if x == -1 {size - 1} else { x % size}});
             let (x, y) = self.snake.tail[0]; 
-            if self.points.is_eaten(x, y){
+            if self.points.collision(x, y){
                 self.points.next();
                 self.snake.add_tail_element();
                 self.score += 10;

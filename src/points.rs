@@ -25,7 +25,7 @@ impl Points {
         self.position_y = self.rand_gen.gen_range(0, self.size - 1);
     }
 
-    pub fn is_eaten(&mut self, snake_x: i8, snake_y: i8) -> bool{
+    pub fn collision(&mut self, snake_x: i8, snake_y: i8) -> bool{
         snake_x == self.position_x && snake_y == self.position_y
     }
 }
