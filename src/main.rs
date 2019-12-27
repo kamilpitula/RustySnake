@@ -2,6 +2,7 @@ extern crate glutin_window;
 extern crate graphics;
 extern crate opengl_graphics;
 extern crate piston;
+extern crate rand;
 
 use glutin_window::GlutinWindow as Window;
 use opengl_graphics::OpenGL;
@@ -11,6 +12,7 @@ use piston::window::WindowSettings;
 
 mod game;
 mod snake;
+mod points;
 
 fn main() {
     let opengl = OpenGL::V3_2;

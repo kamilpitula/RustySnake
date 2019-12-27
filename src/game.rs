@@ -5,13 +5,15 @@ use opengl_graphics::{GlGraphics, OpenGL};
 use std::time::{Duration, SystemTime};
 use std::thread::sleep;
 use super::snake::Snake;
+use super::points::Points;
 
 const STEP: f64 = 25.0;
 
 pub struct Game {
     gl: GlGraphics,
     snake: Snake,
-    size: i8
+    size: i8,
+    points: Points
 }
 
 impl Game{
@@ -19,7 +21,8 @@ impl Game{
         Game {
             gl: GlGraphics::new(opengl_version),
             snake: Snake::new(),
-            size: board_size
+            size: board_size,
+            points: Points::new(board_size)
         }
     }
 
@@ -28,12 +31,21 @@ impl Game{
 
             const GRAY: [f32; 4] = [0.9, 0.9, 0.9, 1.0];
             const RED: [f32; 4] = [1.0, 0.0, 0.0, 1.0];
+            const BLUE: [f32; 4] = [0.0, 0.0, 1.0, 1.0];
 
             let square = rectangle::square(0.0, 0.0, STEP);
             let tail = &self.snake.tail;
+            let point_x = self.points.position_x;
+            let point_y = self.points.position_y;
 
             self.gl.draw(args.viewport(), |c, gl| {
                 clear(GRAY, gl);
+
+                let point_trans = c
+                    .transform
+                    .trans(point_x as f64 * STEP, point_y as f64 * STEP);
+                
+                rectangle(BLUE, square, point_trans, gl);
 
                 for (x, y) in tail {
                     let transform = c
@@ -50,7 +62,12 @@ impl Game{
     pub fn update(&mut self, args: &UpdateArgs){
             let start = SystemTime::now();
             let size = self.size;
-            self.snake.update_position(|x| { if x == -1 {size - 1} else{ x % size}});
+            self.snake.update_position(|x| { if x == -1 {size - 1} else { x % size}});
+            let (x, y) = self.snake.tail[0]; 
+            if self.points.is_eaten(x, y){
+                self.points.next();
+                self.snake.add_tail_element();
+            }
             println!("update");
             self.fill_unused_frame_time(&start);
     }
@@ -61,7 +78,6 @@ impl Game{
                 Keyboard(Key::S) => self.snake.go_down(),
                 Keyboard(Key::A) => self.snake.go_left(),
                 Keyboard(Key::D) => self.snake.go_right(),
-                Keyboard(Key::T) => self.snake.add_tail_element(),
                 _ => {/* Do nothing */}
             }
     }
