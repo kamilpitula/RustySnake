@@ -30,18 +30,10 @@ impl Game{
             const RED: [f32; 4] = [1.0, 0.0, 0.0, 1.0];
 
             let square = rectangle::square(0.0, 0.0, STEP);
-            let position_x = self.snake.position_x;
-            let position_y = self.snake.position_y;
             let tail = &self.snake.tail;
 
             self.gl.draw(args.viewport(), |c, gl| {
                 clear(GRAY, gl);
-
-                let transform = c
-                    .transform
-                    .trans(position_x as f64 * STEP, position_y as f64 * STEP);
-
-                rectangle(RED, square, transform, gl);
 
                 for (x, y) in tail {
                     let transform = c
