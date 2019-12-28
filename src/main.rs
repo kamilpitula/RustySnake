@@ -10,7 +10,9 @@ use opengl_graphics::OpenGL;
 use piston::event_loop::{EventSettings, Events};
 use piston::input::{RenderEvent, PressEvent, UpdateEvent};
 use piston::window::WindowSettings;
+use gamestate::GameState;
 
+mod gamestate;
 mod game;
 mod snake;
 mod points;
@@ -24,7 +26,7 @@ fn main() {
         .build()
         .unwrap();
 
-    let mut game = game::Game::new(opengl, 32);
+    let mut game: game::Game = gamestate::GameState::new(opengl, 32);
 
     let mut settings = EventSettings::new();
     settings.ups = 60;

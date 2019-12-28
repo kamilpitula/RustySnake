@@ -6,6 +6,7 @@ use std::time::{Duration, SystemTime};
 use std::thread::sleep;
 use super::snake::Snake;
 use super::points::Points;
+use super::gamestate::GameState;
 
 const STEP: f64 = 25.0;
 
@@ -19,7 +20,39 @@ pub struct Game {
 }
 
 impl Game{
-    pub fn new(opengl_version: OpenGL, board_size: i8) -> Game {
+    fn process_point_scored(&mut self){
+        let (x, y) = self.snake.tail[0];
+
+        if self.points.collision(x, y){
+            self.points.next();
+            self.snake.add_tail_element();
+            self.score += 10;
+            self.level *= 0.95;
+        }
+    }
+
+    fn process_game_over(&mut self){
+        if self.snake.self_collision(){
+            println!("Collision! Game Over!");
+            println!("score: {}", self.score);
+        }
+    }
+
+    fn fill_unused_frame_time(&mut self, frame_start_time: &SystemTime){
+            let difference = frame_start_time.duration_since(*frame_start_time)
+                                                .expect("Calculating remaining time failed");
+
+            let sum_with_frameduration = difference.checked_add(Duration::from_millis(self.level as u64));
+
+            match sum_with_frameduration {
+                Some(n) => sleep(n),
+                None => panic!("Not an option")
+            }
+    }
+}
+
+impl GameState for Game{
+    fn new(opengl_version: OpenGL, board_size: i8) -> Game {
         Game {
             gl: GlGraphics::new(opengl_version),
             snake: Snake::new(),
@@ -30,7 +63,7 @@ impl Game{
         }
     }
 
-    pub fn render(&mut self, args: &RenderArgs){
+    fn render(&mut self, args: &RenderArgs){
             use graphics::*;
 
             const GRAY: [f32; 4] = [0.9, 0.9, 0.9, 1.0];
@@ -61,7 +94,7 @@ impl Game{
             });
     }
 
-    pub fn update(&mut self, args: &UpdateArgs){
+    fn update(&mut self, args: &UpdateArgs){
             let start = SystemTime::now();
             let size = self.size;
 
@@ -69,47 +102,16 @@ impl Game{
             self.process_game_over();
             self.process_point_scored();
 
-            println!("score: {}", self.score);
-
             self.fill_unused_frame_time(&start);
     }
 
-    pub fn key_press(&mut self, args: &Button){
+    fn key_press(&mut self, args: &Button){
             match *args {
                 Keyboard(Key::W) => self.snake.go_up(),
                 Keyboard(Key::S) => self.snake.go_down(),
                 Keyboard(Key::A) => self.snake.go_left(),
                 Keyboard(Key::D) => self.snake.go_right(),
                 _ => {/* Do nothing */}
-            }
-    }
-
-    fn process_point_scored(&mut self){
-        let (x, y) = self.snake.tail[0];
-
-        if self.points.collision(x, y){
-            self.points.next();
-            self.snake.add_tail_element();
-            self.score += 10;
-            self.level *= 0.95;
-        }
-    }
-
-    fn process_game_over(&mut self){
-        if self.snake.self_collision(){
-            println!("Collision! Game Over!");
-        }
-    }
-
-    fn fill_unused_frame_time(&mut self, frame_start_time: &SystemTime){
-            let difference = frame_start_time.duration_since(*frame_start_time)
-                                                .expect("Calculating remaining time failed");
-
-            let sum_with_frameduration = difference.checked_add(Duration::from_millis(self.level as u64));
-
-            match sum_with_frameduration {
-                Some(n) => sleep(n),
-                None => panic!("Not an option")
             }
     }
 }
