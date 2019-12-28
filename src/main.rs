@@ -3,6 +3,7 @@ extern crate graphics;
 extern crate opengl_graphics;
 extern crate piston;
 extern crate rand;
+extern crate itertools;
 
 use glutin_window::GlutinWindow as Window;
 use opengl_graphics::OpenGL;

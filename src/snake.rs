@@ -67,4 +67,10 @@ impl Snake{
         let (x, y) = self.tail[0];
         self.tail.push((x, y));
     }
+
+    pub fn self_collision(&mut self) -> bool {
+        let (x, y) = self.tail[0];
+        let filtered:Vec<&(i8,i8)> = self.tail.iter().filter(|(a,b)| x==*a && y==*b).collect();
+        filtered.len() > 1
+    }
 }

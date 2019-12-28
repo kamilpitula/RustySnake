@@ -66,8 +66,9 @@ impl Game{
             let size = self.size;
 
             self.snake.update_position(|x| { if x == -1 {size - 1} else { x % size}});
+            self.process_game_over();
             self.process_point_scored();
-            
+
             println!("score: {}", self.score);
 
             self.fill_unused_frame_time(&start);
@@ -91,6 +92,12 @@ impl Game{
             self.snake.add_tail_element();
             self.score += 10;
             self.level *= 0.95;
+        }
+    }
+
+    fn process_game_over(&mut self){
+        if self.snake.self_collision(){
+            println!("Collision! Game Over!");
         }
     }
 
