@@ -64,14 +64,10 @@ impl Game{
     pub fn update(&mut self, args: &UpdateArgs){
             let start = SystemTime::now();
             let size = self.size;
+
             self.snake.update_position(|x| { if x == -1 {size - 1} else { x % size}});
-            let (x, y) = self.snake.tail[0]; 
-            if self.points.collision(x, y){
-                self.points.next();
-                self.snake.add_tail_element();
-                self.score += 10;
-                self.level *= 0.95;
-            }
+            self.process_point_scored();
+            
             println!("score: {}", self.score);
 
             self.fill_unused_frame_time(&start);
@@ -85,6 +81,17 @@ impl Game{
                 Keyboard(Key::D) => self.snake.go_right(),
                 _ => {/* Do nothing */}
             }
+    }
+
+    fn process_point_scored(&mut self){
+        let (x, y) = self.snake.tail[0];
+
+        if self.points.collision(x, y){
+            self.points.next();
+            self.snake.add_tail_element();
+            self.score += 10;
+            self.level *= 0.95;
+        }
     }
 
     fn fill_unused_frame_time(&mut self, frame_start_time: &SystemTime){
