@@ -13,6 +13,7 @@ use piston::window::WindowSettings;
 use gamestate::GameState;
 
 mod gamestate;
+mod startgame;
 mod game;
 mod snake;
 mod points;
