@@ -20,6 +20,17 @@ pub struct Game {
 }
 
 impl Game{
+    pub fn new(opengl_version: OpenGL, board_size: i8) -> Game {
+        Game {
+            gl: GlGraphics::new(opengl_version),
+            snake: Snake::new(),
+            size: board_size,
+            points: Points::new(board_size),
+            score: 0,
+            level: 200.0
+        }
+    }
+
     fn process_point_scored(&mut self){
         let (x, y) = self.snake.tail[0];
 
@@ -52,17 +63,6 @@ impl Game{
 }
 
 impl GameState for Game{
-    fn new(opengl_version: OpenGL, board_size: i8) -> Game {
-        Game {
-            gl: GlGraphics::new(opengl_version),
-            snake: Snake::new(),
-            size: board_size,
-            points: Points::new(board_size),
-            score: 0,
-            level: 200.0
-        }
-    }
-
     fn render(&mut self, args: &RenderArgs){
             use graphics::*;
 

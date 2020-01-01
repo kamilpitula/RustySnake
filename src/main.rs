@@ -11,6 +11,7 @@ use piston::event_loop::{EventSettings, Events};
 use piston::input::{RenderEvent, PressEvent, UpdateEvent};
 use piston::window::WindowSettings;
 use gamestate::GameState;
+use std::rc::Rc;
 
 mod gamestate;
 mod startgame;
@@ -27,7 +28,14 @@ fn main() {
         .build()
         .unwrap();
 
-    let mut game: game::Game = gamestate::GameState::new(opengl, 32);
+    
+    let mut start_view = Box::new(startgame::StartGame::new(opengl, 32));
+    let mut game_view = Box::new(game::Game::new(opengl, 32));
+
+    let mut states: Vec<Box<GameState>> = vec![start_view, game_view];
+
+    let mut current_state = 0;
+
 
     let mut settings = EventSettings::new();
     settings.ups = 60;
@@ -36,15 +44,15 @@ fn main() {
 
     while let Some(e) = events.next(&mut window){
         if let Some(args) = e.render_args(){
-            game.render(&args);
+            states[current_state].render(&args);
         }
 
         if let Some(args) = e.update_args(){
-            game.update(&args);
+            states[current_state].update(&args);
         }
 
         if let Some(args) = e.press_args(){
-            game.key_press(&args);
+            states[current_state].key_press(&args);
         }
     }
 }

@@ -9,14 +9,16 @@ pub struct StartGame {
     size: i8,
 }
 
-impl GameState for StartGame{
-    fn new(opengl_version: OpenGL, board_size: i8) -> StartGame {
+impl StartGame{
+    pub fn new(opengl_version: OpenGL, board_size: i8) -> StartGame {
         StartGame {
             gl: GlGraphics::new(opengl_version),
             size: board_size,
         }
     }
+}
 
+impl GameState for StartGame{
     fn render(&mut self, args: &RenderArgs){
             use graphics::*;
 
