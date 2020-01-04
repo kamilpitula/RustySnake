@@ -1,12 +1,13 @@
 use piston::input::{RenderArgs, UpdateArgs, Button};
 use piston::input::Button::Keyboard;
 use piston::input::keyboard::Key;
-use opengl_graphics::{GlGraphics, OpenGL};
+use opengl_graphics::{GlGraphics, OpenGL, GlyphCache};
 use std::time::{Duration, SystemTime};
 use std::thread::sleep;
 use super::snake::Snake;
 use super::points::Points;
 use super::gamestate::GameState;
+use piston_window::Glyphs;
 
 const STEP: f64 = 25.0;
 
@@ -42,11 +43,13 @@ impl Game{
         }
     }
 
-    fn process_game_over(&mut self){
+    fn process_game_over(&mut self) -> bool {
         if self.snake.self_collision(){
             println!("Collision! Game Over!");
             println!("score: {}", self.score);
+            return true;
         }
+        return false;
     }
 
     fn fill_unused_frame_time(&mut self, frame_start_time: &SystemTime){
@@ -63,7 +66,7 @@ impl Game{
 }
 
 impl GameState for Game{
-    fn render(&mut self, args: &RenderArgs){
+    fn render(&mut self, args: &RenderArgs, glyphs: &mut GlyphCache){
             use graphics::*;
 
             const GRAY: [f32; 4] = [0.9, 0.9, 0.9, 1.0];
@@ -94,15 +97,19 @@ impl GameState for Game{
             });
     }
 
-    fn update(&mut self, args: &UpdateArgs){
+    fn update(&mut self, args: &UpdateArgs) -> bool {
             let start = SystemTime::now();
             let size = self.size;
 
             self.snake.update_position(|x| { if x == -1 {size - 1} else { x % size}});
-            self.process_game_over();
+            if self.process_game_over() {
+                return true;
+            }
             self.process_point_scored();
 
             self.fill_unused_frame_time(&start);
+
+            return false;
     }
 
     fn key_press(&mut self, args: &Button){
