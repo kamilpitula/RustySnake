@@ -14,7 +14,6 @@ use piston::input::{RenderEvent, PressEvent, UpdateEvent};
 use piston::window::*;
 use piston_window::*;
 use gamestate::GameState;
-use std::rc::Rc;
 
 mod gamestate;
 mod startgame;
@@ -34,8 +33,6 @@ fn main() {
     let mut assets = find_folder::Search::ParentsThenKids(3, 3)
                         .for_folder("assets")
                         .unwrap();
-
-    let assetsPath = assets.as_path();
 
     let fontPath = assets.join("AllertaStencil-Regular.ttf");
 

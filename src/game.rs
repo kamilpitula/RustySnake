@@ -7,7 +7,6 @@ use std::thread::sleep;
 use super::snake::Snake;
 use super::points::Points;
 use super::gamestate::GameState;
-use piston_window::Glyphs;
 
 const STEP: f64 = 25.0;
 
@@ -70,6 +69,7 @@ impl GameState for Game{
             use graphics::*;
 
             const GRAY: [f32; 4] = [0.9, 0.9, 0.9, 1.0];
+            const BLACK: [f32; 4] = [0.0, 0.0, 0.0, 1.0];
             const RED: [f32; 4] = [1.0, 0.0, 0.0, 1.0];
             const BLUE: [f32; 4] = [0.0, 0.0, 1.0, 1.0];
 
@@ -77,6 +77,7 @@ impl GameState for Game{
             let tail = &self.snake.tail;
             let point_x = self.points.position_x;
             let point_y = self.points.position_y;
+            let score_string = self.score.to_string();
 
             self.gl.draw(args.viewport(), |c, gl| {
                 clear(GRAY, gl);
@@ -84,6 +85,10 @@ impl GameState for Game{
                 let point_trans = c
                     .transform
                     .trans(point_x as f64 * STEP, point_y as f64 * STEP);
+                
+                let text_trans = c
+                    .transform
+                    .trans(20.0, 30.0);
                 
                 rectangle(BLUE, square, point_trans, gl);
 
@@ -94,6 +99,14 @@ impl GameState for Game{
 
                     rectangle(RED, square, transform, gl);
                 }
+
+                text::Text::new_color(BLACK, 32).draw(
+                    &score_string,
+                    glyphs,
+                    &c.draw_state,
+                    text_trans,
+                    gl
+                ).unwrap();
             });
     }
 

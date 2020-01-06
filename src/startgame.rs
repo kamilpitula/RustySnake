@@ -3,7 +3,6 @@ use opengl_graphics::{GlGraphics, OpenGL, GlyphCache};
 use piston::input::Button::Keyboard;
 use piston::input::keyboard::Key;
 use super::gamestate::GameState;
-use piston_window::*;
 
 
 pub struct StartGame {
@@ -32,7 +31,7 @@ impl GameState for StartGame{
             
 
             self.gl.draw(args.viewport(), |c, gl| {
-                let transform = c.transform.trans(10.0, 100.0);
+                let transform = c.transform.trans(250.0, 400.0);
                 clear(GRAY, gl);
 
                 text::Text::new_color(RED, 32).draw(

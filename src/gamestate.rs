@@ -1,6 +1,5 @@
 use piston::input::{RenderArgs, UpdateArgs, Button};
-use opengl_graphics::{OpenGL, GlyphCache};
-use piston_window::Glyphs;
+use opengl_graphics::GlyphCache;
 
 pub trait GameState {
         fn render(&mut self, args: &RenderArgs, glyphs: &mut GlyphCache);
