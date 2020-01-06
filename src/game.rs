@@ -7,6 +7,9 @@ use std::thread::sleep;
 use super::snake::Snake;
 use super::points::Points;
 use super::gamestate::GameState;
+use super::userscore::{UserScore, HighScores};
+use std::fs::File;
+use std::io::prelude::*;
 
 const STEP: f64 = 25.0;
 
@@ -44,8 +47,15 @@ impl Game{
 
     fn process_game_over(&mut self) -> bool {
         if self.snake.self_collision(){
-            println!("Collision! Game Over!");
-            println!("score: {}", self.score);
+            
+            let new_score = UserScore::new("Unknown".to_string(), self.score);
+            let high_scores = HighScores{scores: vec![new_score]};
+
+            let serialized = serde_yaml::to_string(&high_scores).unwrap();
+
+            let mut file = File::create("high.scores").unwrap();
+            file.write_all(&serialized.as_bytes());
+
             return true;
         }
         return false;

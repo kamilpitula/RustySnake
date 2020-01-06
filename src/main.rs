@@ -21,6 +21,7 @@ mod game;
 mod endgame;
 mod snake;
 mod points;
+mod userscore;
 
 fn main() {
     let opengl = OpenGL::V3_2;
