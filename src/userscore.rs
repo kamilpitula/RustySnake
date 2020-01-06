@@ -2,8 +2,8 @@ use serde::{Serialize, Deserialize};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct UserScore{
-    username: String,
-    score :i32
+    pub username: String,
+    pub score :i32
 }
 
 #[derive(Serialize, Deserialize, Debug)]

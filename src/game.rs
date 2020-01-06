@@ -19,18 +19,26 @@ pub struct Game {
     size: i8,
     points: Points,
     score: i32,
-    level: f64
+    level: f64,
+    high_scores: HighScores,
 }
 
 impl Game{
     pub fn new(opengl_version: OpenGL, board_size: i8) -> Game {
+        let mut file = File::open("high.scores").unwrap();
+        let mut contents = String::new(); 
+        file.read_to_string(&mut contents);
+        let mut deserialized_scores: HighScores = serde_yaml::from_str(&contents).unwrap();
+        deserialized_scores.scores.sort_by(|a, b| b.score.cmp(&a.score)); 
+        
         Game {
             gl: GlGraphics::new(opengl_version),
             snake: Snake::new(),
             size: board_size,
             points: Points::new(board_size),
             score: 0,
-            level: 200.0
+            level: 200.0,
+            high_scores: deserialized_scores,
         }
     }
 
@@ -49,9 +57,9 @@ impl Game{
         if self.snake.self_collision(){
             
             let new_score = UserScore::new("Unknown".to_string(), self.score);
-            let high_scores = HighScores{scores: vec![new_score]};
+            self.high_scores.scores.push(new_score);
 
-            let serialized = serde_yaml::to_string(&high_scores).unwrap();
+            let serialized = serde_yaml::to_string(&self.high_scores).unwrap();
 
             let mut file = File::create("high.scores").unwrap();
             file.write_all(&serialized.as_bytes());
@@ -88,6 +96,7 @@ impl GameState for Game{
             let point_x = self.points.position_x;
             let point_y = self.points.position_y;
             let score_string = self.score.to_string();
+            let high_score_string = self.high_scores.scores[0].score.to_string();
 
             self.gl.draw(args.viewport(), |c, gl| {
                 clear(GRAY, gl);
@@ -98,7 +107,7 @@ impl GameState for Game{
                 
                 let text_trans = c
                     .transform
-                    .trans(20.0, 30.0);
+                    .trans(10.0, 25.0);
                 
                 rectangle(BLUE, square, point_trans, gl);
 
@@ -110,8 +119,8 @@ impl GameState for Game{
                     rectangle(RED, square, transform, gl);
                 }
 
-                text::Text::new_color(BLACK, 32).draw(
-                    &score_string,
+                text::Text::new_color(BLACK, 24).draw(
+                    &("Score: ".to_owned() + &score_string + " High score: " + &high_score_string),
                     glyphs,
                     &c.draw_state,
                     text_trans,
