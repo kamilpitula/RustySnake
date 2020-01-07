@@ -22,6 +22,7 @@ mod endgame;
 mod snake;
 mod points;
 mod userscore;
+mod scorecontroller;
 
 fn main() {
     let opengl = OpenGL::V3_2;
@@ -31,17 +32,18 @@ fn main() {
         .exit_on_esc(true)
         .build()
         .unwrap();
-    let mut assets = find_folder::Search::ParentsThenKids(3, 3)
+
+    let assets = find_folder::Search::ParentsThenKids(3, 3)
                         .for_folder("assets")
                         .unwrap();
 
-    let fontPath = assets.join("AllertaStencil-Regular.ttf");
+    let font_path = assets.join("AllertaStencil-Regular.ttf");
 
-    let mut glyphCache = GlyphCache::new(&fontPath, (), TextureSettings::new()).unwrap();
+    let mut glyph_cache = GlyphCache::new(&font_path, (), TextureSettings::new()).unwrap();
     
-    let mut start_view = Box::new(startgame::StartGame::new(opengl, 32));
-    let mut game_view = Box::new(game::Game::new(opengl, 32));
-    let mut end_view = Box::new(endgame::EndGame::new(opengl, 32));
+    let start_view = Box::new(startgame::StartGame::new(opengl, 32));
+    let game_view = Box::new(game::Game::new(opengl, 32));
+    let end_view = Box::new(endgame::EndGame::new(opengl, 32));
 
     let mut states: Vec<Box<GameState>> = vec![start_view, game_view, end_view];
 
@@ -55,12 +57,12 @@ fn main() {
 
     while let Some(e) = events.next(&mut window){
         if let Some(args) = e.render_args(){
-            states[current_state].render(&args, &mut glyphCache);
+            states[current_state].render(&args, &mut glyph_cache);
         }
 
         if let Some(args) = e.update_args(){
-            let stateFinished = states[current_state].update(&args);
-            if stateFinished{
+            let state_finished = states[current_state].update(&args);
+            if state_finished{
                 current_state += 1;
             }
         }

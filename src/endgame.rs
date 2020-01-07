@@ -9,7 +9,7 @@ use super::gamestate::GameState;
 pub struct EndGame {
     gl: GlGraphics,
     size: i8,
-    goToNextState: bool
+    go_to_next_state: bool
 }
 
 impl EndGame{
@@ -17,7 +17,7 @@ impl EndGame{
         EndGame {
             gl: GlGraphics::new(opengl_version),
             size: board_size,
-            goToNextState: false
+            go_to_next_state: false
         }
     }
 }
@@ -45,7 +45,7 @@ impl GameState for EndGame{
     }
 
     fn update(&mut self, args: &UpdateArgs) -> bool{
-            self.goToNextState
+            self.go_to_next_state
     }
 
     fn key_press(&mut self, args: &Button){
