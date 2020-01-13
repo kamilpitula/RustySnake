@@ -45,7 +45,7 @@ impl GameState for EndGame{
     }
 
     fn update(&mut self, args: &UpdateArgs) -> State<GameData>{
-            if self.goToNextState {
+            if self.go_to_next_state {
                 return State::Start(GameData{})
             }
             return State::None;
@@ -53,7 +53,7 @@ impl GameState for EndGame{
 
     fn key_press(&mut self, args: &Button){
             match *args {
-                Keyboard(Key::Space) => { self.goToNextState = true; },
+                Keyboard(Key::Space) => { self.go_to_next_state = true; },
                 _ => {/* Do nothing */}
             }
     }

@@ -48,7 +48,7 @@ impl GameState for StartGame{
     }
 
     fn update(&mut self, args: &UpdateArgs) -> State<GameData>{
-            if self.goToNextState {
+            if self.go_to_next_state {
                 return State::Game(GameData{});
             }
             return State::None;

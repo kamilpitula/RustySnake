@@ -53,7 +53,7 @@ fn main() {
 
     while let Some(e) = events.next(&mut window){
         if let Some(args) = e.render_args(){
-            current_state.render(&args, &mut glyphCache);
+            current_state.render(&args, &mut glyph_cache);
         }
 
         if let Some(args) = e.update_args(){
