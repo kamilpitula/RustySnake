@@ -24,11 +24,12 @@ pub struct Game {
     points: Points,
     score: i32,
     level: f64,
-    score_controller: ScoreController
+    score_controller: ScoreController,
+    data: GameData
 }
 
 impl Game{
-    pub fn new(opengl_version: OpenGL, board_size: i8) -> Game {
+    pub fn new(opengl_version: OpenGL, board_size: i8, data: GameData) -> Game {
         Game {
             gl: GlGraphics::new(opengl_version),
             snake: Snake::new(),
@@ -36,7 +37,8 @@ impl Game{
             points: Points::new(board_size),
             score: 0,
             level: 200.0,
-            score_controller: ScoreController::new()
+            score_controller: ScoreController::new(),
+            data: data
         }
     }
 
@@ -53,7 +55,7 @@ impl Game{
 
     fn process_game_over(&mut self) -> bool {
         if self.snake.self_collision(){
-            self.score_controller.add_new_score("Unknown", self.score);
+            self.score_controller.add_new_score(&self.data.username, self.score);
             return true;
         }
         return false;
@@ -125,7 +127,7 @@ impl GameState for Game{
 
             self.snake.update_position(|x| { if x == -1 {size - 1} else { x % size}});
             if self.process_game_over() {
-                return State::End(GameData{});
+                return State::End(GameData::new());
             }
             self.process_point_scored();
 

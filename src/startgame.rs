@@ -49,7 +49,9 @@ impl GameState for StartGame{
 
     fn update(&mut self, args: &UpdateArgs) -> State<GameData>{
             if self.go_to_next_state {
-                return State::Game(GameData{});
+                let mut data = GameData::new();
+                data.username = String::from("test");
+                return State::Game(data);
             }
             return State::None;
     }
