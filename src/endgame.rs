@@ -9,7 +9,7 @@ use super::gamedata::GameData;
 pub struct EndGame {
     gl: GlGraphics,
     size: i8,
-    goToNextState: bool
+    go_to_next_state: bool
 }
 
 impl EndGame{
@@ -17,7 +17,7 @@ impl EndGame{
         EndGame {
             gl: GlGraphics::new(opengl_version),
             size: board_size,
-            goToNextState: false
+            go_to_next_state: false
         }
     }
 }

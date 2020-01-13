@@ -10,7 +10,7 @@ use super::gamedata::GameData;
 pub struct StartGame {
     gl: GlGraphics,
     size: i8,
-    goToNextState: bool
+    go_to_next_state: bool
 }
 
 impl StartGame{
@@ -18,7 +18,7 @@ impl StartGame{
         StartGame {
             gl: GlGraphics::new(opengl_version),
             size: board_size,
-            goToNextState: false,
+            go_to_next_state: false,
         }
     }
 }
@@ -56,7 +56,7 @@ impl GameState for StartGame{
 
     fn key_press(&mut self, args: &Button){
             match *args {
-                Keyboard(Key::Space) => { self.goToNextState = true },
+                Keyboard(Key::Space) => { self.go_to_next_state = true },
                 _ => {/* Do nothing */}
             }
     }

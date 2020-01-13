@@ -25,6 +25,7 @@ mod points;
 mod userscore;
 mod states;
 mod gamedata;
+mod scorecontroller;
 
 fn main() {
     let opengl = OpenGL::V3_2;
@@ -34,13 +35,14 @@ fn main() {
         .exit_on_esc(true)
         .build()
         .unwrap();
-    let mut assets = find_folder::Search::ParentsThenKids(3, 3)
+
+    let assets = find_folder::Search::ParentsThenKids(3, 3)
                         .for_folder("assets")
                         .unwrap();
 
-    let fontPath = assets.join("AllertaStencil-Regular.ttf");
+    let font_path = assets.join("AllertaStencil-Regular.ttf");
 
-    let mut glyphCache = GlyphCache::new(&fontPath, (), TextureSettings::new()).unwrap();
+    let mut glyph_cache = GlyphCache::new(&font_path, (), TextureSettings::new()).unwrap();
     
     let mut current_state: Box<GameState> = Box::new(startgame::StartGame::new(opengl, 32));
 

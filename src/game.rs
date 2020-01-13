@@ -12,6 +12,8 @@ use super::states::State;
 use super::gamedata::GameData;
 use std::fs::File;
 use std::io::prelude::*;
+use super::scorecontroller::ScoreController;
+
 
 const STEP: f64 = 25.0;
 
@@ -22,24 +24,11 @@ pub struct Game {
     points: Points,
     score: i32,
     level: f64,
-    high_scores: HighScores,
+    score_controller: ScoreController
 }
 
 impl Game{
     pub fn new(opengl_version: OpenGL, board_size: i8) -> Game {
-        let mut file = File::open("high.scores");
-        let mut deserialized_scores: HighScores;
-
-        match file {
-            Ok(mut f) => {
-                let mut contents = String::new(); 
-                f.read_to_string(&mut contents);
-                deserialized_scores = serde_yaml::from_str(&contents).unwrap();
-                deserialized_scores.scores.sort_by(|a, b| b.score.cmp(&a.score));
-            },
-            Err(e) => deserialized_scores = HighScores{ scores: Vec::new()},
-        }
-        
         Game {
             gl: GlGraphics::new(opengl_version),
             snake: Snake::new(),
@@ -47,7 +36,7 @@ impl Game{
             points: Points::new(board_size),
             score: 0,
             level: 200.0,
-            high_scores: deserialized_scores,
+            score_controller: ScoreController::new()
         }
     }
 
@@ -64,15 +53,7 @@ impl Game{
 
     fn process_game_over(&mut self) -> bool {
         if self.snake.self_collision(){
-            
-            let new_score = UserScore::new("Unknown".to_string(), self.score);
-            self.high_scores.scores.push(new_score);
-
-            let serialized = serde_yaml::to_string(&self.high_scores).unwrap();
-
-            let mut file = File::create("high.scores").unwrap();
-            file.write_all(&serialized.as_bytes());
-
+            self.score_controller.add_new_score("Unknown", self.score);
             return true;
         }
         return false;
@@ -88,14 +69,6 @@ impl Game{
                 Some(n) => sleep(n),
                 None => panic!("Not an option")
             }
-    }
-
-    fn get_high_score(&self) -> String {
-        if(self.high_scores.scores.len() > 0){
-            self.high_scores.scores[0].score.to_string()
-        }else{
-            "0".to_string()
-        }
     }
 }
 
@@ -113,7 +86,7 @@ impl GameState for Game{
             let point_x = self.points.position_x;
             let point_y = self.points.position_y;
             let score_string = self.score.to_string();
-            let high_score_string = self.get_high_score();
+            let high_score_string = self.score_controller.get_high_score();
 
             self.gl.draw(args.viewport(), |c, gl| {
                 clear(GRAY, gl);
