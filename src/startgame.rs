@@ -3,6 +3,8 @@ use opengl_graphics::{GlGraphics, OpenGL, GlyphCache};
 use piston::input::Button::Keyboard;
 use piston::input::keyboard::Key;
 use super::gamestate::GameState;
+use super::states::State;
+use super::gamedata::GameData;
 
 
 pub struct StartGame {
@@ -45,8 +47,11 @@ impl GameState for StartGame{
             });
     }
 
-    fn update(&mut self, args: &UpdateArgs) -> bool{
-            self.goToNextState
+    fn update(&mut self, args: &UpdateArgs) -> State<GameData>{
+            if self.goToNextState {
+                return State::Game(GameData{});
+            }
+            return State::None;
     }
 
     fn key_press(&mut self, args: &Button){

@@ -14,6 +14,7 @@ use piston::input::{RenderEvent, PressEvent, UpdateEvent};
 use piston::window::*;
 use piston_window::*;
 use gamestate::GameState;
+use states::State;
 
 mod gamestate;
 mod startgame;
@@ -22,6 +23,8 @@ mod endgame;
 mod snake;
 mod points;
 mod userscore;
+mod states;
+mod gamedata;
 
 fn main() {
     let opengl = OpenGL::V3_2;
@@ -39,14 +42,7 @@ fn main() {
 
     let mut glyphCache = GlyphCache::new(&fontPath, (), TextureSettings::new()).unwrap();
     
-    let mut start_view = Box::new(startgame::StartGame::new(opengl, 32));
-    let mut game_view = Box::new(game::Game::new(opengl, 32));
-    let mut end_view = Box::new(endgame::EndGame::new(opengl, 32));
-
-    let mut states: Vec<Box<GameState>> = vec![start_view, game_view, end_view];
-
-    let mut current_state = 0;
-
+    let mut current_state: Box<GameState> = Box::new(startgame::StartGame::new(opengl, 32));
 
     let mut settings = EventSettings::new();
     settings.ups = 60;
@@ -55,18 +51,22 @@ fn main() {
 
     while let Some(e) = events.next(&mut window){
         if let Some(args) = e.render_args(){
-            states[current_state].render(&args, &mut glyphCache);
+            current_state.render(&args, &mut glyphCache);
         }
 
         if let Some(args) = e.update_args(){
-            let stateFinished = states[current_state].update(&args);
-            if stateFinished{
-                current_state += 1;
+            let stateFinished = current_state.update(&args);
+            current_state = 
+            match stateFinished {
+                State::Start(data) =>{Box::new(startgame::StartGame::new(opengl, 32))},
+                State::Game(data) => {Box::new(game::Game::new(opengl, 32))},
+                State::End(data) => {Box::new(endgame::EndGame::new(opengl, 32))},
+                State::None => {current_state},
             }
         }
 
         if let Some(args) = e.press_args(){
-            states[current_state].key_press(&args);
+            current_state.key_press(&args);
         }
     }
 }

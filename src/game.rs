@@ -8,6 +8,8 @@ use super::snake::Snake;
 use super::points::Points;
 use super::gamestate::GameState;
 use super::userscore::{UserScore, HighScores};
+use super::states::State;
+use super::gamedata::GameData;
 use std::fs::File;
 use std::io::prelude::*;
 
@@ -144,19 +146,19 @@ impl GameState for Game{
             });
     }
 
-    fn update(&mut self, args: &UpdateArgs) -> bool {
+    fn update(&mut self, args: &UpdateArgs) -> State<GameData> {
             let start = SystemTime::now();
             let size = self.size;
 
             self.snake.update_position(|x| { if x == -1 {size - 1} else { x % size}});
             if self.process_game_over() {
-                return true;
+                return State::End(GameData{});
             }
             self.process_point_scored();
 
             self.fill_unused_frame_time(&start);
 
-            return false;
+            return State::None;
     }
 
     fn key_press(&mut self, args: &Button){
