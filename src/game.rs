@@ -127,7 +127,10 @@ impl GameState for Game{
 
             self.snake.update_position(|x| { if x == -1 {size - 1} else { x % size}});
             if self.process_game_over() {
-                return State::End(GameData::new());
+                let mut gamedata = GameData::new();
+                gamedata.username = self.data.username.clone();
+                gamedata.score = self.score;
+                return State::End(gamedata);
             }
             self.process_point_scored();
 

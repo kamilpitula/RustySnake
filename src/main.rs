@@ -62,7 +62,7 @@ fn main() {
             match stateFinished {
                 State::Start(data) =>{Box::new(startgame::StartGame::new(opengl, 32))},
                 State::Game(data) => {Box::new(game::Game::new(opengl, 32, data))},
-                State::End(data) => {Box::new(endgame::EndGame::new(opengl, 32))},
+                State::End(data) => {Box::new(endgame::EndGame::new(opengl, 32, data))},
                 State::None => {current_state},
             }
         }
