@@ -34,8 +34,8 @@ impl GameState for EndGame{
             let u_score = self.data.score.to_string();
 
             self.gl.draw(args.viewport(), |c, gl| {
-                let transform_game_over = c.transform.trans(250.0, 400.0);
-                let transform_score = c.transform.trans(250.0, 350.0);
+                let transform_game_over = c.transform.trans(250.0, 350.0);
+                let transform_score =  c.transform.trans(250.0, 400.0);
                 clear(GRAY, gl);
 
                 text::Text::new_color(RED, 32).draw(
