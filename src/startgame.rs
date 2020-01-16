@@ -5,6 +5,7 @@ use piston::input::keyboard::Key;
 use super::gamestate::GameState;
 use super::states::State;
 use super::gamedata::GameData;
+use super::colors;
 
 
 pub struct StartGame {
@@ -29,17 +30,14 @@ impl GameState for StartGame{
     fn render(&mut self, args: &RenderArgs, glyphs: &mut GlyphCache){
             use graphics::*;
 
-            const GRAY: [f32; 4] = [0.9, 0.9, 0.9, 1.0];
-            const RED: [f32; 4] = [1.0, 0.0, 0.0, 1.0];
-
             let u_name = &self.username;
 
             self.gl.draw(args.viewport(), |c, gl| {
                 let transform_press_space = c.transform.trans(250.0, 400.0);
                 let transform_username = c.transform.trans(250.0, 350.0);
-                clear(GRAY, gl);
+                clear(colors::GRAY, gl);
 
-                text::Text::new_color(RED, 32).draw(
+                text::Text::new_color(colors::RED, 32).draw(
                     "Press enter to start",
                     glyphs,
                     &c.draw_state,
@@ -47,7 +45,7 @@ impl GameState for StartGame{
                     gl
                 ).unwrap();
 
-                text::Text::new_color(RED, 32).draw(
+                text::Text::new_color(colors::RED, 32).draw(
                     &("Username: ".to_owned() + &u_name),
                     glyphs,
                     &c.draw_state,

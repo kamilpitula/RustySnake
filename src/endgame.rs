@@ -7,6 +7,7 @@ use super::scorecontroller::ScoreController;
 use super::gamestate::GameState;
 use super::states::State;
 use super::gamedata::GameData;
+use super::colors;
 
 pub struct EndGame {
     gl: GlGraphics,
@@ -44,13 +45,13 @@ impl GameState for EndGame{
             self.gl.draw(args.viewport(), |c, gl| {
                 let transform_game_over = c.transform.trans(250.0, 70.0);
                 let transform_score =  c.transform.trans(250.0, 120.0);
-                clear(GRAY, gl);
+                clear(colors::GRAY, gl);
                 let scores_position = 260;
 
                 for (index, score) in scores.iter().enumerate() {
                     let transform_high = c.transform.trans(250.0, (scores_position + (30 * index)) as f64);
 
-                    text::Text::new_color(BLACK, 24).draw(
+                    text::Text::new_color(colors::BLACK, 24).draw(
                         &((index + 1).to_string() + ". " + &score),
                         glyphs,
                         &c.draw_state,
@@ -59,7 +60,7 @@ impl GameState for EndGame{
                     ).unwrap();
                 }
 
-                text::Text::new_color(RED, 42).draw(
+                text::Text::new_color(colors::RED, 42).draw(
                     "GAME OVER",
                     glyphs,
                     &c.draw_state,
@@ -67,7 +68,7 @@ impl GameState for EndGame{
                     gl
                 ).unwrap();
 
-                text::Text::new_color(RED, 32).draw(
+                text::Text::new_color(colors::RED, 32).draw(
                     &("Your score: ".to_owned() + &u_score),
                     glyphs,
                     &c.draw_state,

@@ -10,6 +10,7 @@ use super::gamestate::GameState;
 use super::userscore::{UserScore, HighScores};
 use super::states::State;
 use super::gamedata::GameData;
+use super::colors;
 use std::fs::File;
 use std::io::prelude::*;
 use super::scorecontroller::ScoreController;
@@ -78,11 +79,6 @@ impl GameState for Game{
     fn render(&mut self, args: &RenderArgs, glyphs: &mut GlyphCache){
             use graphics::*;
 
-            const GRAY: [f32; 4] = [0.9, 0.9, 0.9, 1.0];
-            const BLACK: [f32; 4] = [0.0, 0.0, 0.0, 1.0];
-            const RED: [f32; 4] = [1.0, 0.0, 0.0, 1.0];
-            const BLUE: [f32; 4] = [0.0, 0.0, 1.0, 1.0];
-
             let square = rectangle::square(0.0, 0.0, STEP);
             let tail = &self.snake.tail;
             let point_x = self.points.position_x;
@@ -91,7 +87,7 @@ impl GameState for Game{
             let high_score_string = self.score_controller.get_high_score();
 
             self.gl.draw(args.viewport(), |c, gl| {
-                clear(GRAY, gl);
+                clear(colors::GRAY, gl);
 
                 let point_trans = c
                     .transform
@@ -101,17 +97,17 @@ impl GameState for Game{
                     .transform
                     .trans(10.0, 25.0);
                 
-                rectangle(BLUE, square, point_trans, gl);
+                rectangle(colors::BLUE, square, point_trans, gl);
 
                 for (x, y) in tail {
                     let transform = c
                     .transform
                     .trans(*x as f64 * STEP, *y as f64 * STEP);
 
-                    rectangle(RED, square, transform, gl);
+                    rectangle(colors::RED, square, transform, gl);
                 }
 
-                text::Text::new_color(BLACK, 24).draw(
+                text::Text::new_color(colors::BLACK, 24).draw(
                     &("Score: ".to_owned() + &score_string + " High score: " + &high_score_string),
                     glyphs,
                     &c.draw_state,
