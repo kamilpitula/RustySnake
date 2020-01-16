@@ -43,4 +43,12 @@ impl ScoreController{
             "0".to_string()
         }
     }
+
+    pub fn get_top_scores(&self, count: usize) -> Vec<String> {
+        if self.high_scores.scores.len() > 0 {
+            return self.high_scores.scores.iter().take(count).map(|x| x.username.to_string() + "  " + &x.score.to_string() ).collect();
+        } else {
+            return Vec::new();
+        }
+    }
 }

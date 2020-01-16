@@ -2,6 +2,8 @@ use piston::input::{RenderArgs, UpdateArgs, Button};
 use opengl_graphics::{GlGraphics, OpenGL, GlyphCache};
 use piston::input::Button::Keyboard;
 use piston::input::keyboard::Key;
+
+use super::scorecontroller::ScoreController;
 use super::gamestate::GameState;
 use super::states::State;
 use super::gamedata::GameData;
@@ -10,16 +12,20 @@ pub struct EndGame {
     gl: GlGraphics,
     size: i8,
     go_to_next_state: bool,
-    data: GameData
+    data: GameData,
+    top_ten: Vec<String>
 }
 
 impl EndGame{
     pub fn new(opengl_version: OpenGL, board_size: i8, data: GameData) -> EndGame {
+        let scoreController = ScoreController::new();
+        
         EndGame {
             gl: GlGraphics::new(opengl_version),
             size: board_size,
             go_to_next_state: false,
-            data: data
+            data: data,
+            top_ten: scoreController.get_top_scores(10)
         }
     }
 }
@@ -30,15 +36,30 @@ impl GameState for EndGame{
            
             const GRAY: [f32; 4] = [0.9, 0.9, 0.9, 1.0];
             const RED: [f32; 4] = [1.0, 0.0, 0.0, 1.0];
+            const BLACK: [f32; 4] = [0.0, 0.0, 0.0, 1.0];
 
             let u_score = self.data.score.to_string();
+            let scores = &self.top_ten;
 
             self.gl.draw(args.viewport(), |c, gl| {
-                let transform_game_over = c.transform.trans(250.0, 350.0);
-                let transform_score =  c.transform.trans(250.0, 400.0);
+                let transform_game_over = c.transform.trans(250.0, 70.0);
+                let transform_score =  c.transform.trans(250.0, 120.0);
                 clear(GRAY, gl);
+                let scores_position = 260;
 
-                text::Text::new_color(RED, 32).draw(
+                for (index, score) in scores.iter().enumerate() {
+                    let transform_high = c.transform.trans(250.0, (scores_position + (30 * index)) as f64);
+
+                    text::Text::new_color(BLACK, 24).draw(
+                        &((index + 1).to_string() + ". " + &score),
+                        glyphs,
+                        &c.draw_state,
+                        transform_high,
+                        gl
+                    ).unwrap();
+                }
+
+                text::Text::new_color(RED, 42).draw(
                     "GAME OVER",
                     glyphs,
                     &c.draw_state,
