@@ -34,10 +34,6 @@ impl EndGame{
 impl GameState for EndGame{
     fn render(&mut self, args: &RenderArgs, glyphs: &mut GlyphCache){
             use graphics::*;
-           
-            const GRAY: [f32; 4] = [0.9, 0.9, 0.9, 1.0];
-            const RED: [f32; 4] = [1.0, 0.0, 0.0, 1.0];
-            const BLACK: [f32; 4] = [0.0, 0.0, 0.0, 1.0];
 
             let u_score = self.data.score.to_string();
             let scores = &self.top_ten;
