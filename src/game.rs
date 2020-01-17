@@ -13,6 +13,8 @@ use super::gamedata::GameData;
 use std::fs::File;
 use std::io::prelude::*;
 use super::scorecontroller::ScoreController;
+use std::rc::Rc;
+use std::cell::RefCell;
 
 
 const STEP: f64 = 25.0;
@@ -24,12 +26,12 @@ pub struct Game {
     points: Points,
     score: i32,
     level: f64,
-    score_controller: ScoreController,
+    score_controller: Rc<RefCell<ScoreController>>,
     data: GameData
 }
 
 impl Game{
-    pub fn new(opengl_version: OpenGL, board_size: i8, data: GameData) -> Game {
+    pub fn new(opengl_version: OpenGL, board_size: i8, data: GameData, score_controller: Rc<RefCell<ScoreController>>) -> Game {
         Game {
             gl: GlGraphics::new(opengl_version),
             snake: Snake::new(),
@@ -37,7 +39,7 @@ impl Game{
             points: Points::new(board_size),
             score: 0,
             level: 200.0,
-            score_controller: ScoreController::new(),
+            score_controller: score_controller,
             data: data
         }
     }
@@ -55,7 +57,7 @@ impl Game{
 
     fn process_game_over(&mut self) -> bool {
         if self.snake.self_collision(){
-            self.score_controller.add_new_score(&self.data.username, self.score);
+            (*self.score_controller.borrow_mut()).add_new_score(&self.data.username, self.score);
             return true;
         }
         return false;
@@ -88,7 +90,7 @@ impl GameState for Game{
             let point_x = self.points.position_x;
             let point_y = self.points.position_y;
             let score_string = self.score.to_string();
-            let high_score_string = self.score_controller.get_high_score();
+            let high_score_string = (*self.score_controller.borrow_mut()).get_high_score();
 
             self.gl.draw(args.viewport(), |c, gl| {
                 clear(GRAY, gl);

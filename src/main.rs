@@ -15,6 +15,9 @@ use piston::window::*;
 use piston_window::*;
 use gamestate::GameState;
 use states::State;
+use scorecontroller::ScoreController;
+use std::rc::Rc;
+use std::cell::RefCell;
 
 mod gamestate;
 mod startgame;
@@ -45,6 +48,7 @@ fn main() {
     let mut glyph_cache = GlyphCache::new(&font_path, (), TextureSettings::new()).unwrap();
     
     let mut current_state: Box<GameState> = Box::new(startgame::StartGame::new(opengl, 32));
+    let score_controller = Rc::new(RefCell::new(ScoreController::new()));
 
     let mut settings = EventSettings::new();
     settings.ups = 60;
@@ -61,8 +65,8 @@ fn main() {
             current_state = 
             match stateFinished {
                 State::Start(data) =>{Box::new(startgame::StartGame::new(opengl, 32))},
-                State::Game(data) => {Box::new(game::Game::new(opengl, 32, data))},
-                State::End(data) => {Box::new(endgame::EndGame::new(opengl, 32, data))},
+                State::Game(data) => {Box::new(game::Game::new(opengl, 32, data, Rc::clone(&score_controller)))},
+                State::End(data) => {Box::new(endgame::EndGame::new(opengl, 32, data, Rc::clone(&score_controller)))},
                 State::None => {current_state},
             }
         }

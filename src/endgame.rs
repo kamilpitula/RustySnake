@@ -7,6 +7,8 @@ use super::scorecontroller::ScoreController;
 use super::gamestate::GameState;
 use super::states::State;
 use super::gamedata::GameData;
+use std::rc::Rc;
+use std::cell::RefCell;
 
 pub struct EndGame {
     gl: GlGraphics,
@@ -17,15 +19,13 @@ pub struct EndGame {
 }
 
 impl EndGame{
-    pub fn new(opengl_version: OpenGL, board_size: i8, data: GameData) -> EndGame {
-        let scoreController = ScoreController::new();
-        
+    pub fn new(opengl_version: OpenGL, board_size: i8, data: GameData, score_controller: Rc<RefCell<ScoreController>>) -> EndGame {
         EndGame {
             gl: GlGraphics::new(opengl_version),
             size: board_size,
             go_to_next_state: false,
             data: data,
-            top_ten: scoreController.get_top_scores(10)
+            top_ten: (*score_controller.borrow_mut()).get_top_scores(10)
         }
     }
 }

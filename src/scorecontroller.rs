@@ -16,7 +16,6 @@ impl ScoreController{
                 let mut contents = String::new(); 
                 f.read_to_string(&mut contents).expect("Read file failed");
                 deserialized_scores = serde_yaml::from_str(&contents).unwrap();
-                deserialized_scores.scores.sort_by(|a, b| b.score.cmp(&a.score));
             },
             Err(_e) => deserialized_scores = HighScores{ scores: Vec::new()},
         }
@@ -36,16 +35,22 @@ impl ScoreController{
         file.write_all(&serialized.as_bytes()).expect("File write failed");
     }
 
-    pub fn get_high_score(&self) -> String {
+    pub fn get_high_score(&mut self) -> String {
         if self.high_scores.scores.len() > 0 {
-            self.high_scores.scores[0].score.to_string()
+            self.high_scores.scores.sort_by(|a, b| b.score.cmp(&a.score));
+            self.high_scores.scores
+                .iter()
+                .take(1)
+                .map(|x| x.score.to_string())
+                .collect()
         } else {
             "0".to_string()
         }
     }
 
-    pub fn get_top_scores(&self, count: usize) -> Vec<String> {
+    pub fn get_top_scores(&mut self, count: usize) -> Vec<String> {
         if self.high_scores.scores.len() > 0 {
+            self.high_scores.scores.sort_by(|a, b| b.score.cmp(&a.score));
             return self.high_scores.scores
                         .iter()
                         .take(count)
