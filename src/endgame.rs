@@ -33,10 +33,6 @@ impl EndGame{
 impl GameState for EndGame{
     fn render(&mut self, args: &RenderArgs, glyphs: &mut GlyphCache){
             use graphics::*;
-           
-            const GRAY: [f32; 4] = [0.9, 0.9, 0.9, 1.0];
-            const RED: [f32; 4] = [1.0, 0.0, 0.0, 1.0];
-            const BLACK: [f32; 4] = [0.0, 0.0, 0.0, 1.0];
 
             let u_score = self.data.score.to_string();
             let scores = &self.top_ten;
@@ -44,13 +40,13 @@ impl GameState for EndGame{
             self.gl.draw(args.viewport(), |c, gl| {
                 let transform_game_over = c.transform.trans(250.0, 70.0);
                 let transform_score =  c.transform.trans(250.0, 120.0);
-                clear(GRAY, gl);
+                clear(colors::GRAY, gl);
                 let scores_position = 260;
 
                 for (index, score) in scores.iter().enumerate() {
                     let transform_high = c.transform.trans(250.0, (scores_position + (30 * index)) as f64);
 
-                    text::Text::new_color(BLACK, 24).draw(
+                    text::Text::new_color(colors::BLACK, 24).draw(
                         &((index + 1).to_string() + ". " + &score),
                         glyphs,
                         &c.draw_state,
@@ -59,7 +55,7 @@ impl GameState for EndGame{
                     ).unwrap();
                 }
 
-                text::Text::new_color(RED, 42).draw(
+                text::Text::new_color(colors::RED, 42).draw(
                     "GAME OVER",
                     glyphs,
                     &c.draw_state,
@@ -67,7 +63,7 @@ impl GameState for EndGame{
                     gl
                 ).unwrap();
 
-                text::Text::new_color(RED, 32).draw(
+                text::Text::new_color(colors::RED, 32).draw(
                     &("Your score: ".to_owned() + &u_score),
                     glyphs,
                     &c.draw_state,

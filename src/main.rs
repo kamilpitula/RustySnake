@@ -29,6 +29,7 @@ mod userscore;
 mod states;
 mod gamedata;
 mod scorecontroller;
+mod colors;
 
 fn main() {
     let opengl = OpenGL::V3_2;
