@@ -6,6 +6,7 @@ use piston::input::keyboard::Key;
 use super::scorecontroller::ScoreController;
 use super::gamestate::GameState;
 use super::states::State;
+use super::colors;
 use super::gamedata::GameData;
 use std::rc::Rc;
 use std::cell::RefCell;
