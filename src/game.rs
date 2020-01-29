@@ -27,6 +27,7 @@ pub struct Game {
     points: Points,
     score: i32,
     level: f64,
+    elapsed: f64,
     score_controller: Rc<RefCell<ScoreController>>,
     data: GameData
 }
@@ -39,7 +40,8 @@ impl Game{
             size: board_size,
             points: Points::new(board_size),
             score: 0,
-            level: 200.0,
+            elapsed: 0.0,
+            level: 0.3,
             score_controller: score_controller,
             data: data
         }
@@ -64,16 +66,14 @@ impl Game{
         return false;
     }
 
-    fn fill_unused_frame_time(&mut self, frame_start_time: &SystemTime){
-            let difference = frame_start_time.duration_since(*frame_start_time)
-                                                .expect("Calculating remaining time failed");
-
-            let sum_with_frameduration = difference.checked_add(Duration::from_millis(self.level as u64));
-
-            match sum_with_frameduration {
-                Some(n) => sleep(n),
-                None => panic!("Not an option")
+    fn should_process_update(&mut self, delta: f64) -> bool {
+        self.elapsed += delta;
+            if self.elapsed < self.level {
+                return false;
             }
+            self.elapsed = 0.0;
+
+            return true;
     }
 }
 
@@ -120,6 +120,11 @@ impl GameState for Game{
     }
 
     fn update(&mut self, args: &UpdateArgs) -> State<GameData> {
+
+            if !self.should_process_update(args.dt){
+                return State::None;
+            }
+
             let start = SystemTime::now();
             let size = self.size;
 
@@ -131,8 +136,6 @@ impl GameState for Game{
                 return State::End(gamedata);
             }
             self.process_point_scored();
-
-            self.fill_unused_frame_time(&start);
 
             return State::None;
     }

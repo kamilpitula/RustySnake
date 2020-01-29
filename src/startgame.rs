@@ -46,7 +46,7 @@ impl GameState for StartGame{
                 ).unwrap();
 
                 text::Text::new_color(colors::RED, 32).draw(
-                    &("Username: ".to_owned() + &u_name),
+                    &("Player name: ".to_owned() + &u_name),
                     glyphs,
                     &c.draw_state,
                     transform_username,
