@@ -134,10 +134,10 @@ impl GameState for Game{
 
     fn key_press(&mut self, args: &Button){
             match *args {
-                Keyboard(Key::W) => self.snake.go_up(),
-                Keyboard(Key::S) => self.snake.go_down(),
-                Keyboard(Key::A) => self.snake.go_left(),
-                Keyboard(Key::D) => self.snake.go_right(),
+                Keyboard(Key::W) | Keyboard(Key::Up) => self.snake.go_up(),
+                Keyboard(Key::S) | Keyboard(Key::Down) => self.snake.go_down(),
+                Keyboard(Key::A) | Keyboard(Key::Left) => self.snake.go_left(),
+                Keyboard(Key::D) | Keyboard(Key::Right) => self.snake.go_right(),
                 _ => {/* Do nothing */}
             }
     }
