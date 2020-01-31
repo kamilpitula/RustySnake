@@ -75,39 +75,55 @@ impl Game{
 
             return true;
     }
-}
 
-impl GameState for Game{
-    fn render(&mut self, args: &RenderArgs, glyphs: &mut GlyphCache){
-            use graphics::*;
+    fn render_snake(&mut self, args: &RenderArgs){
+        use graphics::*;
+
+        let tail = &self.snake.tail;
+
+        self.gl.draw(args.viewport(), |c, gl| {
 
             let square = rectangle::square(0.0, 0.0, STEP);
-            let tail = &self.snake.tail;
-            let point_x = self.points.position_x;
-            let point_y = self.points.position_y;
-            let score_string = self.score.to_string();
-            let high_score_string = (*self.score_controller.borrow_mut()).get_high_score();
 
-            self.gl.draw(args.viewport(), |c, gl| {
-                clear(colors::GRAY, gl);
+            for (x, y) in tail {
+                let transform = c
+                .transform
+                .trans(*x as f64 * STEP, *y as f64 * STEP);
 
-                let point_trans = c
+                rectangle(colors::RED, square, transform, gl);
+            }
+        });
+    }
+
+    fn render_point(&mut self, args: &RenderArgs){
+        use graphics::*;
+
+        let point_x = self.points.position_x;
+        let point_y = self.points.position_y;
+
+        self.gl.draw(args.viewport(), |c, gl| {
+
+            let square = rectangle::square(0.0, 0.0, STEP);
+
+            let point_trans = c
                     .transform
                     .trans(point_x as f64 * STEP, point_y as f64 * STEP);
                 
-                let text_trans = c
+            rectangle(colors::BLUE, square, point_trans, gl);
+        });
+    }
+
+    fn render_score(&mut self, args: &RenderArgs, glyphs: &mut GlyphCache){
+        use graphics::*;
+
+        let score_string = self.score.to_string();
+        let high_score_string = (*self.score_controller.borrow_mut()).get_high_score();
+
+        self.gl.draw(args.viewport(), |c, gl| {
+
+            let text_trans = c
                     .transform
                     .trans(10.0, 25.0);
-                
-                rectangle(colors::BLUE, square, point_trans, gl);
-
-                for (x, y) in tail {
-                    let transform = c
-                    .transform
-                    .trans(*x as f64 * STEP, *y as f64 * STEP);
-
-                    rectangle(colors::RED, square, transform, gl);
-                }
 
                 text::Text::new_color(colors::BLACK, 24).draw(
                     &("Score: ".to_owned() + &score_string + " High score: " + &high_score_string),
@@ -116,7 +132,21 @@ impl GameState for Game{
                     text_trans,
                     gl
                 ).unwrap();
+        });
+    }
+}
+
+impl GameState for Game{
+    fn render(&mut self, args: &RenderArgs, glyphs: &mut GlyphCache){
+            use graphics::*;
+
+            self.gl.draw(args.viewport(), |c, gl| {
+                clear(colors::GRAY, gl);
             });
+
+            self.render_snake(args);
+            self.render_point(args);
+            self.render_score(args, glyphs);
     }
 
     fn update(&mut self, args: &UpdateArgs) -> State<GameData> {
