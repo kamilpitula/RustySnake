@@ -30,6 +30,8 @@ mod states;
 mod gamedata;
 mod scorecontroller;
 mod colors;
+mod config;
+mod renderable;
 
 fn main() {
     let opengl = OpenGL::V3_2;

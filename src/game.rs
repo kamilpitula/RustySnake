@@ -7,18 +7,17 @@ use std::thread::sleep;
 use super::snake::Snake;
 use super::points::Points;
 use super::gamestate::GameState;
+use super::renderable::Renderable;
 use super::userscore::{UserScore, HighScores};
 use super::states::State;
 use super::gamedata::GameData;
 use super::colors;
+use super::config;
 use std::fs::File;
 use std::io::prelude::*;
 use super::scorecontroller::ScoreController;
 use std::rc::Rc;
 use std::cell::RefCell;
-
-
-const STEP: f64 = 25.0;
 
 pub struct Game {
     gl: GlGraphics,
@@ -76,43 +75,6 @@ impl Game{
             return true;
     }
 
-    fn render_snake(&mut self, args: &RenderArgs){
-        use graphics::*;
-
-        let tail = &self.snake.tail;
-
-        self.gl.draw(args.viewport(), |c, gl| {
-
-            let square = rectangle::square(0.0, 0.0, STEP);
-
-            for (x, y) in tail {
-                let transform = c
-                .transform
-                .trans(*x as f64 * STEP, *y as f64 * STEP);
-
-                rectangle(colors::RED, square, transform, gl);
-            }
-        });
-    }
-
-    fn render_point(&mut self, args: &RenderArgs){
-        use graphics::*;
-
-        let point_x = self.points.position_x;
-        let point_y = self.points.position_y;
-
-        self.gl.draw(args.viewport(), |c, gl| {
-
-            let square = rectangle::square(0.0, 0.0, STEP);
-
-            let point_trans = c
-                    .transform
-                    .trans(point_x as f64 * STEP, point_y as f64 * STEP);
-                
-            rectangle(colors::BLUE, square, point_trans, gl);
-        });
-    }
-
     fn render_score(&mut self, args: &RenderArgs, glyphs: &mut GlyphCache){
         use graphics::*;
 
@@ -144,8 +106,8 @@ impl GameState for Game{
                 clear(colors::GRAY, gl);
             });
 
-            self.render_snake(args);
-            self.render_point(args);
+            self.snake.render(args, &mut self.gl);
+            self.points.render(args, &mut self.gl);
             self.render_score(args, glyphs);
     }
 

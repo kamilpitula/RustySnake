@@ -1,0 +1,1 @@
+pub static STEP: f64 = 25.0;
