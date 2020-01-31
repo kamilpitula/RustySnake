@@ -42,15 +42,9 @@ fn main() {
         .build()
         .unwrap();
 
-    let assets = find_folder::Search::ParentsThenKids(3, 3)
-                        .for_folder("assets")
-                        .unwrap();
-
-    let font_path = assets.join("AllertaStencil-Regular.ttf");
-
-    let mut glyph_cache = GlyphCache::new(&font_path, (), TextureSettings::new()).unwrap();
+    let mut glyph_cache = get_font();
     
-    let mut current_state: Box<GameState> = Box::new(startgame::StartGame::new(opengl, 32));
+    let mut current_state: Box<dyn GameState> = Box::new(startgame::StartGame::new(opengl, 32));
     let score_controller = Rc::new(RefCell::new(ScoreController::new()));
 
     let mut settings = EventSettings::new();
@@ -78,4 +72,14 @@ fn main() {
             current_state.key_press(&args);
         }
     }
+}
+
+fn get_font() -> GlyphCache<'static> {
+    let assets = find_folder::Search::ParentsThenKids(3, 3)
+                        .for_folder("assets")
+                        .unwrap();
+
+    let font_path = assets.join("AllertaStencil-Regular.ttf");
+
+    GlyphCache::new(&font_path, (), TextureSettings::new()).unwrap()
 }
