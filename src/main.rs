@@ -37,7 +37,7 @@ fn main() {
     let opengl = OpenGL::V3_2;
 
     let mut window: Window = WindowSettings::new("Rusty Snake", [800, 800])
-        .graphics_api(opengl)
+        .graphics_api(OpenGL::V3_2)
         .exit_on_esc(true)
         .build()
         .unwrap();
@@ -47,10 +47,7 @@ fn main() {
     let mut current_state: Box<dyn GameState> = Box::new(startgame::StartGame::new(opengl, 32));
     let score_controller = Rc::new(RefCell::new(ScoreController::new()));
 
-    let mut settings = EventSettings::new();
-    settings.ups = 60;
-    settings.max_fps = 240;
-    let mut events = Events::new(settings);
+    let mut events = get_events_loop();
 
     while let Some(e) = events.next(&mut window){
         if let Some(args) = e.render_args(){
@@ -59,6 +56,7 @@ fn main() {
 
         if let Some(args) = e.update_args(){
             let stateFinished = current_state.update(&args);
+            
             current_state = 
             match stateFinished {
                 State::Start(data) =>{Box::new(startgame::StartGame::new(opengl, 32))},
@@ -82,4 +80,13 @@ fn get_font() -> GlyphCache<'static> {
     let font_path = assets.join("AllertaStencil-Regular.ttf");
 
     GlyphCache::new(&font_path, (), TextureSettings::new()).unwrap()
+}
+
+fn get_events_loop() -> Events {
+
+    let mut settings = EventSettings::new();
+    settings.ups = config::UPS;
+    settings.max_fps = config::MAX_FPS;
+
+    Events::new(settings)
 }
