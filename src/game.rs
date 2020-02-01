@@ -28,7 +28,8 @@ pub struct Game {
     level: f64,
     elapsed: f64,
     score_controller: Rc<RefCell<ScoreController>>,
-    data: GameData
+    data: GameData,
+    is_Paused: bool
 }
 
 impl Game{
@@ -42,7 +43,8 @@ impl Game{
             elapsed: 0.0,
             level: 0.3,
             score_controller: score_controller,
-            data: data
+            data: data,
+            is_Paused: false
         }
     }
 
@@ -66,13 +68,17 @@ impl Game{
     }
 
     fn should_process_update(&mut self, delta: f64) -> bool {
-        self.elapsed += delta;
-            if self.elapsed < self.level {
-                return false;
-            }
-            self.elapsed = 0.0;
+        if self.is_Paused {
+            return false;
+        }
 
-            return true;
+        self.elapsed += delta;
+        if self.elapsed < self.level {
+            return false;
+        }
+        self.elapsed = 0.0;
+
+        return true;
     }
 
     fn render_score(&mut self, args: &RenderArgs, glyphs: &mut GlyphCache){
@@ -138,6 +144,7 @@ impl GameState for Game{
                 Keyboard(Key::S) | Keyboard(Key::Down) => self.snake.go_down(),
                 Keyboard(Key::A) | Keyboard(Key::Left) => self.snake.go_left(),
                 Keyboard(Key::D) | Keyboard(Key::Right) => self.snake.go_right(),
+                Keyboard(Key::P) => self.is_Paused = !self.is_Paused,
                 _ => {/* Do nothing */}
             }
     }
