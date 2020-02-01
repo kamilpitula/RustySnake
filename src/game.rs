@@ -11,6 +11,7 @@ use super::renderable::Renderable;
 use super::userscore::{UserScore, HighScores};
 use super::states::State;
 use super::gamedata::GameData;
+use super::textwriter::TextWriter;
 use super::colors;
 use super::config;
 use std::fs::File;
@@ -21,6 +22,7 @@ use std::cell::RefCell;
 
 pub struct Game {
     gl: GlGraphics,
+    writer: TextWriter,
     snake: Snake,
     size: i8,
     points: Points,
@@ -29,7 +31,7 @@ pub struct Game {
     elapsed: f64,
     score_controller: Rc<RefCell<ScoreController>>,
     data: GameData,
-    is_Paused: bool
+    is_Paused: bool,
 }
 
 impl Game{
@@ -37,6 +39,7 @@ impl Game{
         Game {
             gl: GlGraphics::new(opengl_version),
             snake: Snake::new(),
+            writer: TextWriter::new(),
             size: board_size,
             points: Points::new(board_size),
             score: 0,
@@ -82,47 +85,19 @@ impl Game{
     }
 
     fn render_score(&mut self, args: &RenderArgs, glyphs: &mut GlyphCache){
-        use graphics::*;
 
         let score_string = self.score.to_string();
         let high_score_string = (*self.score_controller.borrow_mut()).get_high_score();
+        let score_combined = &("Score: ".to_owned() + &score_string + " High score: " + &high_score_string);
 
-        self.gl.draw(args.viewport(), |c, gl| {
-
-            let text_trans = c
-                    .transform
-                    .trans(10.0, 25.0);
-
-                text::Text::new_color(colors::BLACK, 24).draw(
-                    &("Score: ".to_owned() + &score_string + " High score: " + &high_score_string),
-                    glyphs,
-                    &c.draw_state,
-                    text_trans,
-                    gl
-                ).unwrap();
-        });
+        self.writer.write(args, &mut self.gl, glyphs, colors::BLACK, 24, 10.0, 25.0, score_combined);
     }
 
     fn render_pause(&mut self, args: &RenderArgs, glyphs: &mut GlyphCache){
         if !self.is_Paused {
             return;
         }
-        use graphics::*;
-
-        self.gl.draw(args.viewport(), |c, gl| {
-
-            let text_trans = c
-                    .transform
-                    .trans(690.0, 25.0);
-
-                text::Text::new_color(colors::RED, 24).draw(
-                    "PAUSED",
-                    glyphs,
-                    &c.draw_state,
-                    text_trans,
-                    gl
-                ).unwrap();
-        });
+        self.writer.write(args, &mut self.gl, glyphs, colors::RED, 24, 690.0, 25.0, "PAUSED");
     }
 }
 
