@@ -90,14 +90,14 @@ impl Game{
         let high_score_string = (*self.score_controller.borrow_mut()).get_high_score();
         let score_combined = &("Score: ".to_owned() + &score_string + " High score: " + &high_score_string);
 
-        self.writer.write(args, &mut self.gl, glyphs, colors::BLACK, 24, 10.0, 25.0, score_combined);
+        self.writer.render_text(args, &mut self.gl, glyphs, colors::BLACK, 24, 10.0, 25.0, score_combined);
     }
 
     fn render_pause(&mut self, args: &RenderArgs, glyphs: &mut GlyphCache){
         if !self.is_Paused {
             return;
         }
-        self.writer.write(args, &mut self.gl, glyphs, colors::RED, 24, 690.0, 25.0, "PAUSED");
+        self.writer.render_text(args, &mut self.gl, glyphs, colors::RED, 24, 690.0, 25.0, "PAUSED");
     }
 }
 

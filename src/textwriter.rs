@@ -10,7 +10,7 @@ impl TextWriter {
         }
     }
 
-    pub fn write(
+    pub fn render_text(
         &mut self,
         args: &RenderArgs,
         gl: &mut GlGraphics,
