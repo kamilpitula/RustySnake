@@ -8,11 +8,13 @@ use super::gamestate::GameState;
 use super::states::State;
 use super::colors;
 use super::gamedata::GameData;
+use super::textwriter::TextWriter;
 use std::rc::Rc;
 use std::cell::RefCell;
 
 pub struct EndGame {
     gl: GlGraphics,
+    writer: TextWriter,
     size: i8,
     go_to_next_state: bool,
     data: GameData,
@@ -23,6 +25,7 @@ impl EndGame{
     pub fn new(opengl_version: OpenGL, board_size: i8, data: GameData, score_controller: Rc<RefCell<ScoreController>>) -> EndGame {
         EndGame {
             gl: GlGraphics::new(opengl_version),
+            writer: TextWriter::new(),
             size: board_size,
             go_to_next_state: false,
             data: data,
@@ -35,44 +38,23 @@ impl GameState for EndGame{
     fn render(&mut self, args: &RenderArgs, glyphs: &mut GlyphCache){
             use graphics::*;
 
-            let u_score = self.data.score.to_string();
-            let scores = &self.top_ten;
-
             self.gl.draw(args.viewport(), |c, gl| {
-                let transform_game_over = c.transform.trans(250.0, 70.0);
-                let transform_score =  c.transform.trans(250.0, 120.0);
                 clear(colors::GRAY, gl);
-                let scores_position = 260;
-
-                for (index, score) in scores.iter().enumerate() {
-                    let transform_high = c.transform.trans(250.0, (scores_position + (30 * index)) as f64);
-
-                    text::Text::new_color(colors::BLACK, 24).draw(
-                        &((index + 1).to_string() + ". " + &score),
-                        glyphs,
-                        &c.draw_state,
-                        transform_high,
-                        gl
-                    ).unwrap();
-                }
-
-                text::Text::new_color(colors::RED, 42).draw(
-                    "GAME OVER",
-                    glyphs,
-                    &c.draw_state,
-                    transform_game_over,
-                    gl
-                ).unwrap();
-
-                text::Text::new_color(colors::RED, 32).draw(
-                    &("Your score: ".to_owned() + &u_score),
-                    glyphs,
-                    &c.draw_state,
-                    transform_score,
-                    gl
-                ).unwrap();
-
             });
+            
+            let u_score = self.data.score.to_string();
+            let your_score =  &("Your score: ".to_owned() + &u_score);
+            self.writer.render_text(args, &mut self.gl, glyphs, colors::RED, 42, 250.0, 70.0, "GAME OVER");
+            
+            self.writer.render_text(args, &mut self.gl, glyphs, colors::RED, 32, 250.0, 120.0, your_score);
+
+            let scores = &self.top_ten;
+            for (index, score) in scores.iter().enumerate() {
+                let score = &((index + 1).to_string() + ". " + &score);
+                let pos_y = (260 + (30 * index));
+
+                self.writer.render_text(args, &mut self.gl, glyphs, colors::BLACK, 24, 250.0, pos_y as f64, score);
+            }
     }
 
     fn update(&mut self, args: &UpdateArgs) -> State<GameData>{
