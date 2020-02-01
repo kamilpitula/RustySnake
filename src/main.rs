@@ -41,13 +41,12 @@ fn main() {
         .exit_on_esc(true)
         .build()
         .unwrap();
-
-    let mut glyph_cache = get_font();
     
     let mut current_state: Box<dyn GameState> = Box::new(startgame::StartGame::new(opengl, 32));
     let score_controller = Rc::new(RefCell::new(ScoreController::new()));
 
     let mut events = get_events_loop();
+    let mut glyph_cache = get_font();
 
     while let Some(e) = events.next(&mut window){
         if let Some(args) = e.render_args(){

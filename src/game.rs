@@ -102,6 +102,28 @@ impl Game{
                 ).unwrap();
         });
     }
+
+    fn render_pause(&mut self, args: &RenderArgs, glyphs: &mut GlyphCache){
+        if !self.is_Paused {
+            return;
+        }
+        use graphics::*;
+
+        self.gl.draw(args.viewport(), |c, gl| {
+
+            let text_trans = c
+                    .transform
+                    .trans(690.0, 25.0);
+
+                text::Text::new_color(colors::RED, 24).draw(
+                    "PAUSED",
+                    glyphs,
+                    &c.draw_state,
+                    text_trans,
+                    gl
+                ).unwrap();
+        });
+    }
 }
 
 impl GameState for Game{
@@ -115,6 +137,7 @@ impl GameState for Game{
             self.snake.render(args, &mut self.gl);
             self.points.render(args, &mut self.gl);
             self.render_score(args, glyphs);
+            self.render_pause(args, glyphs);
     }
 
     fn update(&mut self, args: &UpdateArgs) -> State<GameData> {
