@@ -9,7 +9,7 @@ pub struct ScoreController {
 impl ScoreController{
     pub fn new() -> ScoreController {
         let file = File::open("high.scores");
-        let mut deserialized_scores: HighScores;
+        let deserialized_scores: HighScores;
         
         match file {
             Ok(mut f) => {
