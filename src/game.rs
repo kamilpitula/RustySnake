@@ -2,20 +2,14 @@ use piston::input::{RenderArgs, UpdateArgs, Button};
 use piston::input::Button::Keyboard;
 use piston::input::keyboard::Key;
 use opengl_graphics::{GlGraphics, OpenGL, GlyphCache};
-use std::time::{Duration, SystemTime};
-use std::thread::sleep;
 use super::snake::Snake;
 use super::points::Points;
 use super::gamestate::GameState;
 use super::renderable::Renderable;
-use super::userscore::{UserScore, HighScores};
 use super::states::State;
 use super::gamedata::GameData;
 use super::textwriter::TextWriter;
 use super::colors;
-use super::config;
-use std::fs::File;
-use std::io::prelude::*;
 use super::scorecontroller::ScoreController;
 use std::rc::Rc;
 use std::cell::RefCell;
@@ -121,7 +115,6 @@ impl GameState for Game{
                 return State::None;
             }
 
-            let start = SystemTime::now();
             let size = self.size;
 
             self.snake.update_position(|x| { if x == -1 {size - 1} else { x % size}});

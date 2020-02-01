@@ -47,7 +47,7 @@ impl EndGame{
         let scores = &self.top_ten;
         for (index, score) in scores.iter().enumerate() {
             let score = &((index + 1).to_string() + ". " + &score);
-            let pos_y = (260 + (30 * index));
+            let pos_y = 260 + (30 * index);
 
             self.writer.render_text(args, &mut self.gl, glyphs, colors::BLACK, 24, 250.0, pos_y as f64, score);
         }
