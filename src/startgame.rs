@@ -5,11 +5,13 @@ use piston::input::keyboard::Key;
 use super::gamestate::GameState;
 use super::states::State;
 use super::gamedata::GameData;
+use super::textwriter::TextWriter;
 use super::colors;
 
 
 pub struct StartGame {
     gl: GlGraphics,
+    writer: TextWriter,
     size: i8,
     go_to_next_state: bool,
     username: String
@@ -19,6 +21,7 @@ impl StartGame{
     pub fn new(opengl_version: OpenGL, board_size: i8) -> StartGame {
         StartGame {
             gl: GlGraphics::new(opengl_version),
+            writer: TextWriter::new(),
             size: board_size,
             go_to_next_state: false,
             username: String::new()
@@ -30,30 +33,15 @@ impl GameState for StartGame{
     fn render(&mut self, args: &RenderArgs, glyphs: &mut GlyphCache){
             use graphics::*;
 
-            let u_name = &self.username;
-
             self.gl.draw(args.viewport(), |c, gl| {
-                let transform_press_space = c.transform.trans(250.0, 400.0);
-                let transform_username = c.transform.trans(250.0, 350.0);
                 clear(colors::GRAY, gl);
-
-                text::Text::new_color(colors::RED, 32).draw(
-                    "Press enter to start",
-                    glyphs,
-                    &c.draw_state,
-                    transform_press_space,
-                    gl
-                ).unwrap();
-
-                text::Text::new_color(colors::RED, 32).draw(
-                    &("Player name: ".to_owned() + &u_name),
-                    glyphs,
-                    &c.draw_state,
-                    transform_username,
-                    gl
-                ).unwrap();
-
             });
+
+            let u_name = &self.username;
+            let name_to_write =  &("Player name: ".to_owned() + &u_name);
+
+            self.writer.render_text(args, &mut self.gl, glyphs, colors::RED, 32, 250.0, 400.0, "Press enter to start");
+            self.writer.render_text(args, &mut self.gl, glyphs, colors::RED, 32, 250.0, 350.0, name_to_write);
     }
 
     fn update(&mut self, args: &UpdateArgs) -> State<GameData>{
