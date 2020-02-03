@@ -17,6 +17,7 @@ use gamestate::GameState;
 use states::State;
 use scorecontroller::ScoreController;
 use std::rc::Rc;
+use std::cmp;
 use std::cell::RefCell;
 
 mod gamestate;
@@ -50,12 +51,24 @@ fn main() {
     let mut glyph_cache = get_font();
 
     let mut gl = GlGraphics::new(opengl);
+    let (ax, ay) = config::TARGET_ASPECT;
 
     while let Some(e) = events.next(&mut window){
         if let Some(args) = e.render_args(){
-            
+
             gl.draw(args.viewport(), |c, mut gl| {
                 clear(colors::GRAY, gl);
+                let size = c.get_view_size();
+                let size_x = size[0];
+                let size_y = size[1];
+                let width = size_x.min((size_y * ax as f64) / ay as f64);
+                let height = size_y.min((size_x * ay as f64) / ax as f64);
+                let left = (size_x - width) / 2.0;
+                let bottom = (size_y - height) / 2.0;
+                let offset = (left, bottom);
+
+                // let c = c.scale(width / 800 as f64, height / 800 as f64);
+                let c = c.trans(left, bottom);
                 current_state.render(&c, &mut gl, &mut glyph_cache);
             });
         }

@@ -96,6 +96,14 @@ impl Game{
 
 impl GameState for Game{
     fn render(&mut self, ctx: &Context, mut gl: &mut GlGraphics, glyphs: &mut GlyphCache){
+        use graphics::*;
+            let transform = ctx
+                .transform
+                .trans(0.0, 0.0);
+
+            let square = rectangle::square(0.0, 0.0, 800.0);
+            rectangle(colors::DARK_GRAY, square, transform, gl);
+
             self.snake.render(&ctx, &mut gl);
             self.points.render(&ctx, &mut gl);
             self.render_score(&ctx, &mut gl, glyphs);
