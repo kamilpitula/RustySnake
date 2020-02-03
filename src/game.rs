@@ -2,6 +2,7 @@ use piston::input::{RenderArgs, UpdateArgs, Button};
 use piston::input::Button::Keyboard;
 use piston::input::keyboard::Key;
 use opengl_graphics::{GlGraphics, OpenGL, GlyphCache};
+use graphics::Context;
 use super::snake::Snake;
 use super::points::Points;
 use super::gamestate::GameState;
@@ -15,7 +16,6 @@ use std::rc::Rc;
 use std::cell::RefCell;
 
 pub struct Game {
-    gl: GlGraphics,
     writer: TextWriter,
     snake: Snake,
     size: i8,
@@ -29,9 +29,8 @@ pub struct Game {
 }
 
 impl Game{
-    pub fn new(opengl_version: OpenGL, board_size: i8, data: GameData, score_controller: Rc<RefCell<ScoreController>>) -> Game {
+    pub fn new(board_size: i8, data: GameData, score_controller: Rc<RefCell<ScoreController>>) -> Game {
         Game {
-            gl: GlGraphics::new(opengl_version),
             snake: Snake::new(),
             writer: TextWriter::new(),
             size: board_size,
@@ -78,35 +77,29 @@ impl Game{
         return true;
     }
 
-    fn render_score(&mut self, args: &RenderArgs, glyphs: &mut GlyphCache){
+    fn render_score(&mut self, ctx: &Context, mut gl: &mut GlGraphics, glyphs: &mut GlyphCache){
 
         let score_string = self.score.to_string();
         let high_score_string = (*self.score_controller.borrow_mut()).get_high_score();
         let score_combined = &("Score: ".to_owned() + &score_string + " High score: " + &high_score_string);
 
-        self.writer.render_text(args, &mut self.gl, glyphs, colors::BLACK, 24, 10.0, 25.0, score_combined);
+        self.writer.render_text(ctx, &mut gl, glyphs, colors::BLACK, 24, 10.0, 25.0, score_combined);
     }
 
-    fn render_pause(&mut self, args: &RenderArgs, glyphs: &mut GlyphCache){
+    fn render_pause(&mut self, ctx: &Context, mut gl: &mut GlGraphics, glyphs: &mut GlyphCache){
         if !self.is_Paused {
             return;
         }
-        self.writer.render_text(args, &mut self.gl, glyphs, colors::RED, 24, 690.0, 25.0, "PAUSED");
+        self.writer.render_text(ctx, &mut gl, glyphs, colors::RED, 24, 690.0, 25.0, "PAUSED");
     }
 }
 
 impl GameState for Game{
-    fn render(&mut self, args: &RenderArgs, glyphs: &mut GlyphCache){
-            use graphics::*;
-
-            self.gl.draw(args.viewport(), |c, gl| {
-                clear(colors::GRAY, gl);
-            });
-
-            self.snake.render(args, &mut self.gl);
-            self.points.render(args, &mut self.gl);
-            self.render_score(args, glyphs);
-            self.render_pause(args, glyphs);
+    fn render(&mut self, ctx: &Context, mut gl: &mut GlGraphics, glyphs: &mut GlyphCache){
+            self.snake.render(&ctx, &mut gl);
+            self.points.render(&ctx, &mut gl);
+            self.render_score(&ctx, &mut gl, glyphs);
+            self.render_pause(&ctx, &mut gl, glyphs);       
     }
 
     fn update(&mut self, args: &UpdateArgs) -> State<GameData> {

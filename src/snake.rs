@@ -80,24 +80,22 @@ use super::colors;
 use super::config;
 use piston::input::RenderArgs;
 use opengl_graphics::GlGraphics;
+use graphics::Context;
 
 impl Renderable for Snake {
-    fn render(&mut self, args: &RenderArgs, gl: &mut GlGraphics) {
+    fn render(&mut self, ctx: &Context, gl: &mut GlGraphics) {
         use graphics::*;
-
+        
         let tail = &self.tail;
 
-        gl.draw(args.viewport(), |c, gl| {
+        let square = rectangle::square(0.0, 0.0, config::STEP);
 
-            let square = rectangle::square(0.0, 0.0, config::STEP);
+        for (x, y) in tail {
+            let transform = ctx
+            .transform
+            .trans(*x as f64 * config::STEP, *y as f64 * config::STEP);
 
-            for (x, y) in tail {
-                let transform = c
-                .transform
-                .trans(*x as f64 * config::STEP, *y as f64 * config::STEP);
-
-                rectangle(colors::RED, square, transform, gl);
-            }
-        });
+            rectangle(colors::RED, square, transform, gl);
+         }
     }
 }

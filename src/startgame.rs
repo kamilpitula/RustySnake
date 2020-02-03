@@ -2,6 +2,7 @@ use piston::input::{RenderArgs, UpdateArgs, Button};
 use opengl_graphics::{GlGraphics, OpenGL, GlyphCache};
 use piston::input::Button::Keyboard;
 use piston::input::keyboard::Key;
+use graphics::Context;
 use super::gamestate::GameState;
 use super::states::State;
 use super::gamedata::GameData;
@@ -10,7 +11,6 @@ use super::colors;
 
 
 pub struct StartGame {
-    gl: GlGraphics,
     writer: TextWriter,
     size: i8,
     go_to_next_state: bool,
@@ -18,9 +18,8 @@ pub struct StartGame {
 }
 
 impl StartGame{
-    pub fn new(opengl_version: OpenGL, board_size: i8) -> StartGame {
+    pub fn new(board_size: i8) -> StartGame {
         StartGame {
-            gl: GlGraphics::new(opengl_version),
             writer: TextWriter::new(),
             size: board_size,
             go_to_next_state: false,
@@ -30,30 +29,26 @@ impl StartGame{
 }
 
 impl GameState for StartGame{
-    fn render(&mut self, args: &RenderArgs, glyphs: &mut GlyphCache){
-            use graphics::*;
+    fn render(&mut self, ctx: &Context, mut gl: &mut GlGraphics, glyphs: &mut GlyphCache){
+            
+        let u_name = &self.username;
 
-            self.gl.draw(args.viewport(), |c, gl| {
-                clear(colors::GRAY, gl);
-            });
+        let name_to_write =  &("Player name: ".to_owned() + &u_name);
 
-            let u_name = &self.username;
-            let name_to_write =  &("Player name: ".to_owned() + &u_name);
-
-            self.writer.render_text(args, &mut self.gl, glyphs, colors::RED, 32, 250.0, 400.0, "Press enter to start");
-            self.writer.render_text(args, &mut self.gl, glyphs, colors::RED, 32, 250.0, 350.0, name_to_write);
+        self.writer.render_text(&ctx, &mut gl, glyphs, colors::RED, 32, 250.0, 400.0, "Press enter to start");
+        self.writer.render_text(&ctx, &mut gl, glyphs, colors::RED, 32, 250.0, 350.0, name_to_write);
     }
 
     fn update(&mut self, args: &UpdateArgs) -> State<GameData>{
-            if self.go_to_next_state {
-                let mut data = GameData::new();
-                data.username = self.username.clone();
-                if data.username.len() < 1{
-                    return State::None;
-                }
-                return State::Game(data);
+        if self.go_to_next_state {
+            let mut data = GameData::new();
+             data.username = self.username.clone();
+            if data.username.len() < 1{
+               return State::None;
             }
-            return State::None;
+            return State::Game(data);
+        }
+        return State::None;
     }
 
     fn key_press(&mut self, args: &Button){

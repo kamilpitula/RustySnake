@@ -1,6 +1,7 @@
 use piston::input::RenderArgs;
 use opengl_graphics::GlGraphics;
+use graphics::Context;
 
 pub trait Renderable {
-    fn render(&mut self, args: &RenderArgs, gl: &mut GlGraphics);
+    fn render(&mut self, ctx: &Context, gl: &mut GlGraphics);
 }

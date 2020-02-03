@@ -35,23 +35,21 @@ use super::colors;
 use super::config;
 use piston::input::RenderArgs;
 use opengl_graphics::GlGraphics;
+use graphics::Context;
 
 impl Renderable for Points {
-    fn render(&mut self, args: &RenderArgs, gl: &mut GlGraphics) {
+    fn render(&mut self, ctx: &Context, gl: &mut GlGraphics) {
         use graphics::*;
 
         let point_x = self.position_x;
         let point_y = self.position_y;
 
-        gl.draw(args.viewport(), |c, gl| {
+        let square = rectangle::square(0.0, 0.0, config::STEP);
 
-            let square = rectangle::square(0.0, 0.0, config::STEP);
-
-            let point_trans = c
-                    .transform
-                    .trans(point_x as f64 * config::STEP, point_y as f64 * config::STEP);
+        let point_trans = ctx
+                .transform
+                .trans(point_x as f64 * config::STEP, point_y as f64 * config::STEP);
                 
-            rectangle(colors::BLUE, square, point_trans, gl);
-        });
+        rectangle(colors::BLUE, square, point_trans, gl);
     }
 }

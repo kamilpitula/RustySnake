@@ -8,7 +8,7 @@ extern crate itertools;
 extern crate find_folder;
 
 use glutin_window::GlutinWindow as Window;
-use opengl_graphics::{OpenGL, GlyphCache};
+use opengl_graphics::{OpenGL, GlGraphics, GlyphCache};
 use piston::event_loop::{EventSettings, Events};
 use piston::input::{RenderEvent, PressEvent, UpdateEvent};
 use piston::window::*;
@@ -43,15 +43,21 @@ fn main() {
         .build()
         .unwrap();
     
-    let mut current_state: Box<dyn GameState> = Box::new(startgame::StartGame::new(opengl, 32));
+    let mut current_state: Box<dyn GameState> = Box::new(startgame::StartGame::new(32));
     let score_controller = Rc::new(RefCell::new(ScoreController::new()));
 
     let mut events = get_events_loop();
     let mut glyph_cache = get_font();
 
+    let mut gl = GlGraphics::new(opengl);
+
     while let Some(e) = events.next(&mut window){
         if let Some(args) = e.render_args(){
-            current_state.render(&args, &mut glyph_cache);
+            
+            gl.draw(args.viewport(), |c, mut gl| {
+                clear(colors::GRAY, gl);
+                current_state.render(&c, &mut gl, &mut glyph_cache);
+            });
         }
 
         if let Some(args) = e.update_args(){
@@ -59,9 +65,9 @@ fn main() {
             
             current_state = 
             match stateFinished {
-                State::Start(data) =>{Box::new(startgame::StartGame::new(opengl, 32))},
-                State::Game(data) => {Box::new(game::Game::new(opengl, 32, data, Rc::clone(&score_controller)))},
-                State::End(data) => {Box::new(endgame::EndGame::new(opengl, 32, data, Rc::clone(&score_controller)))},
+                State::Start(data) =>{Box::new(startgame::StartGame::new(32))},
+                State::Game(data) => {Box::new(game::Game::new(32, data, Rc::clone(&score_controller)))},
+                State::End(data) => {Box::new(endgame::EndGame::new(32, data, Rc::clone(&score_controller)))},
                 State::None => {current_state},
             }
         }
