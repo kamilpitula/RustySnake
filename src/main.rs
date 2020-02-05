@@ -58,17 +58,12 @@ fn main() {
 
             gl.draw(args.viewport(), |c, mut gl| {
                 clear(colors::GRAY, gl);
-                let size = c.get_view_size();
-                let size_x = size[0];
-                let size_y = size[1];
-                let width = size_x.min((size_y * ax as f64) / ay as f64);
-                let height = size_y.min((size_x * ay as f64) / ax as f64);
-                let left = (size_x - width) / 2.0;
-                let bottom = (size_y - height) / 2.0;
-                let offset = (left, bottom);
 
-                // let c = c.scale(width / 800 as f64, height / 800 as f64);
+                let (board_size, left, bottom) = calculate_viewport(&c);
+
+                let c = c.scale(board_size / 800 as f64, board_size / 800 as f64);
                 let c = c.trans(left, bottom);
+
                 current_state.render(&c, &mut gl, &mut glyph_cache);
             });
         }
@@ -108,4 +103,19 @@ fn get_events_loop() -> Events {
     settings.max_fps = config::MAX_FPS;
 
     Events::new(settings)
+}
+
+fn calculate_viewport(ctx: &Context) -> (f64, f64, f64) {
+    let size = ctx.get_view_size();
+    let size_x = size[0];
+    let size_y = size[1];
+    // let width = size_x.min((size_y * ax as f64) / ay as f64);
+    // let height = size_y.min((size_x * ay as f64) / ax as f64);
+    let width = size_x.min(800.0);
+    let height = size_y.min(800.0);
+    let a = width.min(height);
+    let left = (size_x - width) / 2.0;
+    let bottom = (size_y - height) / 2.0;
+    
+    (a, left, bottom)
 }

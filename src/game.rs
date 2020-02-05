@@ -92,18 +92,18 @@ impl Game{
         }
         self.writer.render_text(ctx, &mut gl, glyphs, colors::RED, 24, 690.0, 25.0, "PAUSED");
     }
+
+    fn render_board_background(&mut self, ctx: &Context, mut gl: &mut GlGraphics) {
+        use graphics::*;
+
+        let square = rectangle::square(0.0, 0.0, 800.0);
+        rectangle(colors::DARK_GRAY, square, ctx.transform, gl);
+    }
 }
 
 impl GameState for Game{
     fn render(&mut self, ctx: &Context, mut gl: &mut GlGraphics, glyphs: &mut GlyphCache){
-        use graphics::*;
-            let transform = ctx
-                .transform
-                .trans(0.0, 0.0);
-
-            let square = rectangle::square(0.0, 0.0, 800.0);
-            rectangle(colors::DARK_GRAY, square, transform, gl);
-
+            self.render_board_background(&ctx, &mut gl);
             self.snake.render(&ctx, &mut gl);
             self.points.render(&ctx, &mut gl);
             self.render_score(&ctx, &mut gl, glyphs);
