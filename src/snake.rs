@@ -8,7 +8,7 @@ enum SnakeDirection {
 
 pub struct Snake {
     direction: SnakeDirection,
-    pub tail: Vec<(i8, i8)>
+    pub tail: Vec<(i16, i16)>
 }
 
 impl Snake{
@@ -22,7 +22,7 @@ impl Snake{
     }
 
     pub fn update_position<F>(&mut self, range_checker: F)
-        where F: Fn(i8) -> i8 {
+        where F: Fn(i16) -> i16 {
 
             for i in (1..self.tail.len()).rev() {
                 let (x, y) = self.tail[i - 1];
@@ -70,7 +70,7 @@ impl Snake{
 
     pub fn self_collision(&mut self) -> bool {
         let (x, y) = self.tail[0];
-        let filtered:Vec<&(i8,i8)> = self.tail.iter().filter(|(a,b)| x==*a && y==*b).collect();
+        let filtered:Vec<&(i16,i16)> = self.tail.iter().filter(|(a,b)| x==*a && y==*b).collect();
         filtered.len() > 1
     }
 }
@@ -78,7 +78,6 @@ impl Snake{
 use super::renderable::Renderable;
 use super::colors;
 use super::config;
-use piston::input::RenderArgs;
 use opengl_graphics::GlGraphics;
 use graphics::Context;
 
@@ -88,12 +87,12 @@ impl Renderable for Snake {
         
         let tail = &self.tail;
 
-        let square = rectangle::square(0.0, 0.0, config::STEP);
+        let square = rectangle::square(0.0, 0.0, config::STEP as f64);
 
         for (x, y) in tail {
             let transform = ctx
             .transform
-            .trans(*x as f64 * config::STEP, *y as f64 * config::STEP);
+            .trans(*x as f64 * config::STEP as f64, *y as f64 * config::STEP as f64);
 
             rectangle(colors::RED, square, transform, gl);
          }

@@ -1,4 +1,3 @@
-use piston::input::RenderArgs;
 use opengl_graphics::GlGraphics;
 use graphics::Context;
 

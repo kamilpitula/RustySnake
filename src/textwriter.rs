@@ -1,5 +1,4 @@
 use opengl_graphics::{GlGraphics, GlyphCache};
-use piston::input::RenderArgs;
 use graphics::Context;
 
 pub struct TextWriter{

@@ -1,7 +1,7 @@
-use piston::input::{RenderArgs, UpdateArgs, Button};
+use piston::input::{UpdateArgs, Button};
 use piston::input::Button::Keyboard;
 use piston::input::keyboard::Key;
-use opengl_graphics::{GlGraphics, OpenGL, GlyphCache};
+use opengl_graphics::{GlGraphics, GlyphCache};
 use graphics::Context;
 use super::snake::Snake;
 use super::points::Points;
@@ -18,7 +18,8 @@ use std::cell::RefCell;
 pub struct Game {
     writer: TextWriter,
     snake: Snake,
-    size: i8,
+    size: i16,
+    board_size: i16,
     points: Points,
     score: i32,
     level: f64,
@@ -29,12 +30,20 @@ pub struct Game {
 }
 
 impl Game{
-    pub fn new(board_size: i8, data: GameData, score_controller: Rc<RefCell<ScoreController>>) -> Game {
+    pub fn new(board_size: i16, step_size: i16, data: GameData, score_controller: Rc<RefCell<ScoreController>>) -> Game {
+        
+        if (board_size % step_size) != 0 {
+            panic!("Incorrect size or step size {0}", (board_size % step_size));
+        }
+
+        let size = (board_size / step_size);
+
         Game {
             snake: Snake::new(),
             writer: TextWriter::new(),
-            size: board_size,
-            points: Points::new(board_size),
+            size: size,
+            board_size: board_size,
+            points: Points::new(size),
             score: 0,
             elapsed: 0.0,
             level: 0.3,
@@ -93,10 +102,10 @@ impl Game{
         self.writer.render_text(ctx, &mut gl, glyphs, colors::RED, 24, 690.0, 25.0, "PAUSED");
     }
 
-    fn render_board_background(&mut self, ctx: &Context, mut gl: &mut GlGraphics) {
+    fn render_board_background(&mut self, ctx: &Context, gl: &mut GlGraphics) {
         use graphics::*;
 
-        let square = rectangle::square(0.0, 0.0, 800.0);
+        let square = rectangle::square(0.0, 0.0, self.board_size as f64);
         rectangle(colors::DARK_GRAY, square, ctx.transform, gl);
     }
 }

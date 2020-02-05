@@ -3,14 +3,14 @@ use rand::Rng;
 use rand::prelude::ThreadRng;
 
 pub struct Points {
-    pub position_x: i8,
-    pub position_y: i8,
+    pub position_x: i16,
+    pub position_y: i16,
     rand_gen: ThreadRng,
-    size: i8
+    size: i16
 }
 
 impl Points {
-    pub fn new(board_size: i8) -> Points {
+    pub fn new(board_size: i16) -> Points {
         let mut gen = rand::thread_rng();
         Points {
             rand_gen: gen,
@@ -25,7 +25,7 @@ impl Points {
         self.position_y = self.rand_gen.gen_range(0, self.size - 1);
     }
 
-    pub fn collision(&mut self, snake_x: i8, snake_y: i8) -> bool{
+    pub fn collision(&mut self, snake_x: i16, snake_y: i16) -> bool{
         snake_x == self.position_x && snake_y == self.position_y
     }
 }
@@ -33,7 +33,6 @@ impl Points {
 use super::renderable::Renderable;
 use super::colors;
 use super::config;
-use piston::input::RenderArgs;
 use opengl_graphics::GlGraphics;
 use graphics::Context;
 
@@ -44,11 +43,11 @@ impl Renderable for Points {
         let point_x = self.position_x;
         let point_y = self.position_y;
 
-        let square = rectangle::square(0.0, 0.0, config::STEP);
+        let square = rectangle::square(0.0, 0.0, config::STEP as f64);
 
         let point_trans = ctx
                 .transform
-                .trans(point_x as f64 * config::STEP, point_y as f64 * config::STEP);
+                .trans(point_x as f64 * config::STEP as f64, point_y as f64 * config::STEP as f64);
                 
         rectangle(colors::BLUE, square, point_trans, gl);
     }

@@ -1,4 +1,4 @@
-use piston::input::{RenderArgs, UpdateArgs, Button};
+use piston::input::{UpdateArgs, Button};
 use opengl_graphics::GlyphCache;
 use super::states::State;
 use super::gamedata::GameData;

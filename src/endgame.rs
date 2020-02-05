@@ -1,5 +1,5 @@
-use piston::input::{RenderArgs, UpdateArgs, Button};
-use opengl_graphics::{GlGraphics, OpenGL, GlyphCache};
+use piston::input::{UpdateArgs, Button};
+use opengl_graphics::{GlGraphics, GlyphCache};
 use piston::input::Button::Keyboard;
 use piston::input::keyboard::Key;
 use graphics::Context;

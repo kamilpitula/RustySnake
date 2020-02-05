@@ -17,7 +17,6 @@ use gamestate::GameState;
 use states::State;
 use scorecontroller::ScoreController;
 use std::rc::Rc;
-use std::cmp;
 use std::cell::RefCell;
 
 mod gamestate;
@@ -59,9 +58,11 @@ fn main() {
             gl.draw(args.viewport(), |c, mut gl| {
                 clear(colors::GRAY, gl);
 
-                let (board_size, left, bottom) = calculate_viewport(&c);
+                let (board_size_calculated, left, bottom) = calculate_viewport(&c);
 
-                let c = c.scale(board_size / 800 as f64, board_size / 800 as f64);
+                let c = c.scale(
+                    board_size_calculated / config::BOARD_SIZE as f64,
+                    board_size_calculated / config::BOARD_SIZE as f64);
                 let c = c.trans(left, bottom);
 
                 current_state.render(&c, &mut gl, &mut glyph_cache);
@@ -74,7 +75,7 @@ fn main() {
             current_state = 
             match stateFinished {
                 State::Start(data) =>{Box::new(startgame::StartGame::new(32))},
-                State::Game(data) => {Box::new(game::Game::new(32, data, Rc::clone(&score_controller)))},
+                State::Game(data) => {Box::new(game::Game::new(config::BOARD_SIZE, config::STEP, data, Rc::clone(&score_controller)))},
                 State::End(data) => {Box::new(endgame::EndGame::new(32, data, Rc::clone(&score_controller)))},
                 State::None => {current_state},
             }
@@ -111,8 +112,8 @@ fn calculate_viewport(ctx: &Context) -> (f64, f64, f64) {
     let size_y = size[1];
     // let width = size_x.min((size_y * ax as f64) / ay as f64);
     // let height = size_y.min((size_x * ay as f64) / ax as f64);
-    let width = size_x.min(800.0);
-    let height = size_y.min(800.0);
+    let width = size_x.min(config::BOARD_SIZE as f64);
+    let height = size_y.min(config::BOARD_SIZE as f64);
     let a = width.min(height);
     let left = (size_x - width) / 2.0;
     let bottom = (size_y - height) / 2.0;
