@@ -4,7 +4,7 @@ use piston::input::keyboard::Key;
 use opengl_graphics::{GlGraphics, GlyphCache};
 use graphics::Context;
 use super::snake::Snake;
-use super::points::Points;
+use super::point::Point;
 use super::gamestate::GameState;
 use super::renderable::Renderable;
 use super::states::State;
@@ -20,7 +20,7 @@ pub struct Game {
     snake: Snake,
     size: i16,
     board_size: i16,
-    points: Points,
+    point: Point,
     score: i32,
     level: f64,
     elapsed: f64,
@@ -43,7 +43,7 @@ impl Game{
             writer: TextWriter::new(),
             size: size,
             board_size: board_size,
-            points: Points::new(size),
+            point: Point::new(size),
             score: 0,
             elapsed: 0.0,
             level: 0.3,
@@ -56,8 +56,8 @@ impl Game{
     fn process_point_scored(&mut self){
         let (x, y) = self.snake.tail[0];
 
-        if self.points.collision(x, y){
-            self.points.next();
+        if self.point.collision(x, y){
+            self.point.next();
             self.snake.add_tail_element();
             self.score += 10;
             self.level *= 0.95;
@@ -114,9 +114,9 @@ impl GameState for Game{
     fn render(&mut self, ctx: &Context, mut gl: &mut GlGraphics, glyphs: &mut GlyphCache){
             self.render_board_background(&ctx, &mut gl);
             self.snake.render(&ctx, &mut gl);
-            self.points.render(&ctx, &mut gl);
+            self.point.render(&ctx, &mut gl);
             self.render_score(&ctx, &mut gl, glyphs);
-            self.render_pause(&ctx, &mut gl, glyphs);       
+            self.render_pause(&ctx, &mut gl, glyphs);
     }
 
     fn update(&mut self, args: &UpdateArgs) -> State<GameData> {

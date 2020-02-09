@@ -24,7 +24,7 @@ mod startgame;
 mod game;
 mod endgame;
 mod snake;
-mod points;
+mod point;
 mod userscore;
 mod states;
 mod gamedata;

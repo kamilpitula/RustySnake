@@ -2,17 +2,17 @@ use rand;
 use rand::Rng;
 use rand::prelude::ThreadRng;
 
-pub struct Points {
+pub struct Point {
     pub position_x: i16,
     pub position_y: i16,
     rand_gen: ThreadRng,
     size: i16
 }
 
-impl Points {
-    pub fn new(board_size: i16) -> Points {
+impl Point {
+    pub fn new(board_size: i16) -> Point {
         let mut gen = rand::thread_rng();
-        Points {
+        Point {
             rand_gen: gen,
             position_x: gen.gen_range(0, board_size - 1),
             position_y: gen.gen_range(0, board_size - 1),
@@ -36,7 +36,7 @@ use super::config;
 use opengl_graphics::GlGraphics;
 use graphics::Context;
 
-impl Renderable for Points {
+impl Renderable for Point {
     fn render(&mut self, ctx: &Context, gl: &mut GlGraphics) {
         use graphics::*;
 
