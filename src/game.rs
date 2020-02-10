@@ -12,6 +12,7 @@ use super::gamedata::GameData;
 use super::textwriter::TextWriter;
 use super::colors;
 use super::scorecontroller::ScoreController;
+use super::config;
 use std::rc::Rc;
 use std::cell::RefCell;
 
@@ -43,7 +44,7 @@ impl Game{
             writer: TextWriter::new(),
             size: size,
             board_size: board_size,
-            point: Point::new(size),
+            point: Point::new(size, config::BONUS_CHANCE),
             score: 0,
             elapsed: 0.0,
             level: 0.3,
@@ -57,9 +58,13 @@ impl Game{
         let (x, y) = self.snake.tail[0];
 
         if self.point.collision(x, y){
+            if self.point.is_bonus{
+                self.score += 15;
+            }else {
+                self.score += 10;
+            }
             self.point.next();
             self.snake.add_tail_element();
-            self.score += 10;
             self.level *= 0.95;
         }
     }
