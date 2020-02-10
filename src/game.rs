@@ -58,14 +58,10 @@ impl Game{
         let (x, y) = self.snake.tail[0];
 
         if self.point.collision(x, y){
-            if self.point.is_bonus{
-                self.score += 15;
-            }else {
-                self.score += 10;
-            }
-            self.point.next();
+            self.add_earned_points();
             self.snake.add_tail_element();
             self.level *= 0.95;
+            self.point.next();
         }
     }
 
@@ -89,6 +85,14 @@ impl Game{
         self.elapsed = 0.0;
 
         return true;
+    }
+
+    fn add_earned_points(&mut self){
+        if self.point.is_bonus{
+            self.score += 15;
+        }else {
+            self.score += 10;
+        }
     }
 
     fn render_score(&mut self, ctx: &Context, mut gl: &mut GlGraphics, glyphs: &mut GlyphCache){
