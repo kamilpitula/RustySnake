@@ -40,6 +40,8 @@ fn main() {
     let mut window: Window = WindowSettings::new("Rusty Snake", [800, 800])
         .graphics_api(OpenGL::V3_2)
         .exit_on_esc(true)
+        .decorated(false)
+        .fullscreen(true)
         .build()
         .unwrap();
     
